@@ -34,7 +34,7 @@ curl https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve
 ```
 On Linux or Mac, start a terminal, use the `cd` command to change to the working directory, and then run the following command:
 ```
-curl -s -O https://raw.githubusercontent.com/fastsolve/docker-desktop/fastsolve/fastsolve_desktop.py
+curl -s -O https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve_desktop.py
 ```
 
 After downloading the script, you can start the Docker image using the command
@@ -52,12 +52,12 @@ python fastsolve_desktop.py -t debug -p
 Besides using the Docker Image as an X-Windows desktop environment, you can also use it as a Jupyter-Notebook server with the
 default web browser on your computer. Simply replace `fastsolve_desktop.py` with `fastsolve_jupyter.py` in the preceding commands. That is, on Windows run the commands
 ```
-curl https://raw.githubusercontent.com/fastsolve/docker-desktop/fastsolve/fastsolve_jupyter.py -outfile fastsolve_jupyter.py
+curl https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve_jupyter.py -outfile fastsolve_jupyter.py
 python fastsolve_jupyter.py -p
 ```
 or on Linux and Mac run the commands
 ```
-curl -s -O https://raw.githubusercontent.com/fastsolve/docker-desktop/fastsolve/fastsolve_jupyter.py
+curl -s -O https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve_jupyter.py
 python fastsolve_jupyter.py -p
 ```
 in the directory where your Jupyter notebooks are stored.
