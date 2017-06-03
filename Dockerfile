@@ -55,14 +55,13 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         clang-format && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-USER $DOCKER_USER
-
 ADD image/bin $DOCKER_HOME/bin
 COPY sshkey /tmp/sshkey
 
 # Clone ilupack4m, paracoder, and petsc4m
 RUN curl -L "https://onedrive.live.com/download?$(cat sshkey)" | \
         tar xf - -C $DOCKER_HOME && \
+    rm -f /tmp/sshkey && \
     $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
@@ -74,7 +73,6 @@ RUN curl -L "https://onedrive.live.com/download?$(cat sshkey)" | \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     \
-    rm -f /tmp/sshkey
+    chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME &&
 
-USER root
 WORKDIR $DOCKER_HOME/fastsolve
