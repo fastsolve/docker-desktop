@@ -60,8 +60,7 @@ COPY sshkey /tmp/sshkey
 
 # Clone ilupack4m, paracoder, and petsc4m
 RUN curl -L "https://onedrive.live.com/download?$(cat /tmp/sshkey)" | \
-        tar xf - -C $DOCKER_HOME && \
-    rm -f /tmp/sshkey && \
+        tar xf - -C $DOCKER_HOME && rm -f /tmp/sshkey && \
     $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
