@@ -72,6 +72,6 @@ RUN curl -L "https://onedrive.live.com/download?$(cat /tmp/sshkey)" | \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     \
-    chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME &&
+    chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME/fastsolve
