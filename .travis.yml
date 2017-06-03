@@ -4,17 +4,17 @@ sudo: required
 language: python
 services: docker
 
-matrix:
-  - env: XVFB=1
-  - env: XVFB=0
+env:
+  - XVFB=1
+  - XVFB=0
 
 before_install:
   # Start up xvfb
-  - '[ "$XVFB" == "1" ] && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid
+  - '[[ "$XVFB" == "1" ]] && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid
      --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16'
 
 before_script:
-  - '[ "$XVFB" == "1" ] && export DISPLAY=:99.0 && sh -e /etc/init.d/xvfb start'
+  - '[[ "$XVFB" == "1" ]] && export DISPLAY=:99.0 && sh -e /etc/init.d/xvfb start'
 
 script:
   - docker --version
