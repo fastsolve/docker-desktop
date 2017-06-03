@@ -9,6 +9,7 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
+ADD image/bin $DOCKER_HOME/bin
 
 # Install debugging tools and Atom
 RUN add-apt-repository ppa:webupd8team/atom && \
@@ -53,17 +54,15 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         auto-detect-indentation \
         python-autopep8 \
         clang-format && \
+    curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
+        tar xf - -C $DOCKER_HOME && \
+    ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-ADD image/bin $DOCKER_HOME/bin
 USER $DOCKER_USER
 
 # Clone ilupack4m, paracoder, and petsc4m
-RUN sudo chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME/bin && \
-    curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
-        tar xf - -C $DOCKER_HOME && \
-    ssh-keyscan -H github.com > $DOCKER_HOME/.ssh/known_hosts && \
-    $DOCKER_HOME/bin/pull_fastsolve && \
+RUN $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
