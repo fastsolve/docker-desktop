@@ -23,7 +23,7 @@ def parse_args(description):
     parser = argparse.ArgumentParser(description=description)
 
     parser.add_argument('-u', "--user",
-                        help='username used by the image. ' +
+                        help='The username used by the image. ' +
                         ' The default is to retrieve from image.',
                         default="")
 
@@ -32,7 +32,7 @@ def parse_args(description):
                         'The default is fastsolve/desktop.',
                         default="fastsolve/desktop")
     parser.add_argument('-t', '--tag',
-                        help='Tag of the image. The default is latest. ' +
+                        help='The tag of the image. The default is latest. ' +
                         'If the image already has a tag, its tag prevails.',
                         default="latest")
 

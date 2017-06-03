@@ -23,7 +23,7 @@ def parse_args(description):
     parser = argparse.ArgumentParser(description=description)
 
     parser.add_argument('-u', "--user",
-                        help='username used by the image. ' +
+                        help='The username used by the image. ' +
                         ' The default is to retrieve from image.',
                         default="")
 
@@ -35,7 +35,12 @@ def parse_args(description):
     parser.add_argument('-t', '--tag',
                         help='Tag of the image. The default is dev. ' +
                         'If the image already has a tag, its tag prevails.',
-                        default="dev")
+                        default="debug")
+
+    parser.add_argument('-m', '--matlab', nargs='?',
+                        help='MATLAB version (R2016b and R2017a are ' +
+                        'supported).  The default is R2016b.',
+                        default="R2016b")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
@@ -69,6 +74,11 @@ def parse_args(description):
                         default=False)
 
     args = parser.parse_args()
+
+    if args.matlab and args.tag.find('matlab') < 0:
+        args.tag = args.tag + "-matlab"
+    elif args.tag.find('matlab') > 0 and not args.matlab:
+        args.matlab = "R2016b"
 
     # Append tag to image if the image has no tag
     if args.image.find(':') < 0:
@@ -181,7 +191,7 @@ def download_matlab(version, user, image, volumes):
                 "--warning=no-unknown-keyword --strip-components 2 && " + \
                 "curl -s \"https://" + bb_user + ":" + bb_token + "@" + \
                 "bitbucket.org/numgeom/matlab-desktop/get/licenses.zip" + \
-                "\" | " + "bsdtar zxf - -C /usr/local/MATLAB/" + version +\
+                "\" | " + "bsdtar zxf - -C /usr/local/MATLAB/" + version + \
                 " --strip-components 1 && " + \
                 "chown -R " + user + ":" + user + \
                 " /usr/local/MATLAB/" + version + "/licenses && " + \
@@ -296,7 +306,7 @@ if __name__ == "__main__":
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
                     "-v", "matlab_config:" + docker_home + "/.matlab"]
 
-        download_matlab("R2017a", user, args.image, volumes)
+        download_matlab(args.matlab, user, args.image, volumes)
 
     print("Starting up docker image...")
     if subprocess.check_output(["docker", "--version"]). \
@@ -315,12 +325,15 @@ if __name__ == "__main__":
     else:
         size = args.size
 
+    envs = ["--env", "RESOLUT=" + size,
+            "--env", "HOST_UID=" + uid]
+    if args.matlab:
+        envs += ["--env", "MATLAB_VERSION=" + args.matlab]
+
     # Start the docker image in the background and pipe the stderr
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
-                     "-p", "127.0.0.1:" + port_vnc + ":6080",
-                     "--env", "RESOLUT=" + size,
-                     "--env", "HOST_UID=" + uid] +
-                    volumes +
+                     "-p", "127.0.0.1:" + port_vnc + ":6080"] +
+                    envs + volumes +
                     ["-w", docker_home + "/fastsolve",
                      args.image,
                      "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
