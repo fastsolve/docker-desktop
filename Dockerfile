@@ -72,8 +72,7 @@ RUN sudo chown -R $DOCKER_USER:$DOCKER_USER $DOCKER_HOME/bin && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
     \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    \
+    echo "@atom $DOCKER_HOME/fastsolve" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root
