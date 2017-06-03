@@ -1,0 +1,12 @@
+#!/bin/bash
+
+WORKDIR=$DOCKER_HOME/fastsolve
+
+# Build ilupack4m
+cd $WORKDIR/ilupack4m/makefiles && make TARGET=Octave
+
+# Build paracoder
+cd $WORKDIR/paracoder && octave --eval "build_m2c -force"
+
+# Build petsc4m
+cd $WORKDIR/petsc4m && octave --eval "build_petsc -force"
