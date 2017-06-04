@@ -179,6 +179,5 @@ RUN usermod -l $DOCKER_USER -d $DOCKER_HOME -m $OLD_USER && \
 
 WORKDIR $DOCKER_HOME
 
-USER root
 ENTRYPOINT ["/sbin/my_init","--quiet","--","/sbin/setuser","fastsolve","/bin/bash","-l","-c"]
 CMD ["$DOCKER_SHELL","-l","-i"]

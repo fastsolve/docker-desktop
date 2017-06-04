@@ -43,9 +43,9 @@ python fastsolve_desktop.py -p
 ```
 This will download and run the Docker image and then launch your default web browser to show the desktop environment. The `-p` option is optional, and it instructs the Python script to pull and update the image to the latest version.
 
-To start in debugging mode, use the command
+To see additional options, use the command
 ```
-python fastsolve_desktop.py -t debug -p
+python fastsolve_desktop.py -h
 ```
 
 ### Running the Docker Image as Jupyter-Notebook Server
