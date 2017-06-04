@@ -13,6 +13,12 @@ script:
       cd dev-matlab &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
+# Trigger build of dev branch of numgeom-desktop
+  - '[[ ! -f success ]] ||
+     (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
+      cd numgeom &&
+      git commit --allow-empty -m "Trigger compilation." &&
+      git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
