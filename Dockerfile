@@ -52,8 +52,9 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         meld \
         atom \
         clang-format && \
-    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local --strip-components 2 && \
-    ln -s -f /usr/local/MATLAB/R2017a/bin/glnxa64/mlint /usr/local/bin && \
+    mkdir -p /usr/local/mlint && \
+    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
+    ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
     apt-get clean && \
     pip3 install -U \
          autopep8 \
