@@ -41,6 +41,9 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 
+ADD image/etc /etc
+ADD image/bin $DOCKER_HOME/bin
+
 # Install debugging tools and Atom
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
@@ -95,21 +98,19 @@ RUN add-apt-repository ppa:webupd8team/atom && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-ADD image/etc /etc
-ADD image/bin $DOCKER_HOME/bin
+USER $DOCKER_USER
 
 ###############################################################
 # Temporarily install MATLAB
 # Build ilupack4m, paracoder, and petsc4m for Octave and MATLAB
 ###############################################################
 RUN $DOCKER_HOME/bin/pull_fastsolve && \
-    $DOCKER_HOME/bin/build_fastsolve && \
     \
-    curl -L "$(cat /tmp/url)" | bsdtar zxf - -C /usr/local --strip-components 2 && \
-    /etc/my_init.d/make_aliases.sh && \
+    curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
+    sudo /etc/my_init.d/make_aliases.sh && \
     rm -f $DOCKER_HOME/.octave && \
     $DOCKER_HOME/bin/build_fastsolve && \
-    rm -rf /usr/local/MATLAB/R* && \
+    sudo rm -rf /usr/local/MATLAB/R* && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
@@ -118,8 +119,7 @@ RUN $DOCKER_HOME/bin/pull_fastsolve && \
     echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
     \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
 
 WORKDIR $DOCKER_HOME/fastsolve
+USER root
