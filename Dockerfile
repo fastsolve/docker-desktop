@@ -22,11 +22,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         atom \
         clang-format && \
     apt-get clean && \
-    pip3 install -U \
-         autopep8 \
-         flake8 \
-         PyQt5 \
-         spyder && \
     rm -rf /var/lib/apt/lists/* && \
     \
     curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
@@ -67,53 +62,20 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 USER $DOCKER_USER
 
 ###############################################################
-# Install Atom packages; Temporarily install MATLAB
-# Build ilupack4m, paracoder, and petsc4m for Octave and MATLAB
+# Temporarily install MATLAB and build ilupack4m, paracoder, and
+# petsc4m for Octave and MATLAB. Install Atom packages.
 ###############################################################
-RUN apm install \
-        language-cpp14 \
-        language-matlab \
-        language-fortran \
-        language-docker \
-        autocomplete-python \
-        autocomplete-fortran \
-        git-plus \
-        merge-conflicts \
-        split-diff \
-        gcc-make-run \
-        platformio-ide-terminal \
-        intentions \
-        busy-signal \
-        linter-ui-default \
-        linter \
-        linter-gcc \
-        linter-gfortran \
-        linter-flake8 \
-        linter-matlab \
-        dbg \
-        output-panel \
-        dbg-gdb \
-        python-debugger \
-        auto-detect-indentation \
-        python-autopep8 \
-        clang-format && \
-    \
-    sudo mkdir -p /usr/local/mlint && \
-    curl -L https://goo.gl/ExjLDP | \
-        sudo bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
-    sudo ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
-    \
-    curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
+RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
     tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     \
+    rm -f $DOCKER_HOME/.octaverc && \
     $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
     curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     sudo /etc/my_init.d/make_aliases.sh && \
     \
-    rm -f $DOCKER_HOME/.octaverc && \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
@@ -123,7 +85,46 @@ RUN apm install \
     echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
     \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
+    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    \
+    sudo pip3 install -U \
+         autopep8 \
+         flake8 \
+         PyQt5 \
+         spyder && \
+         && \
+    \
+    sudo mkdir -p /usr/local/mlint && \
+    curl -L https://goo.gl/ExjLDP | \
+    sudo bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
+    sudo ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
+    apm install \
+          language-cpp14 \
+          language-matlab \
+          language-fortran \
+          language-docker \
+          autocomplete-python \
+          autocomplete-fortran \
+          git-plus \
+          merge-conflicts \
+          split-diff \
+          gcc-make-run \
+          platformio-ide-terminal \
+          intentions \
+          busy-signal \
+          linter-ui-default \
+          linter \
+          linter-gcc \
+          linter-gfortran \
+          linter-flake8 \
+          linter-matlab \
+          dbg \
+          output-panel \
+          dbg-gdb \
+          python-debugger \
+          auto-detect-indentation \
+          python-autopep8 \
+          clang-format
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root

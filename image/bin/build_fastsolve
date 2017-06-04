@@ -2,11 +2,12 @@
 
 WORKDIR=$DOCKER_HOME/fastsolve
 
-# Build ilupack4m
-cd $WORKDIR/ilupack4m/makefiles && make TARGET=Octave
-
-# Build paracoder
-cd $WORKDIR/paracoder && octave --eval "build_m2c" && octave --eval "build_m2c -matlab"
-
-# Build petsc4m
-cd $WORKDIR/petsc4m && octave --eval "build_petsc" && octave --eval "build_m2c -matlab"
+if [[ -z "$1" || "$1" == "-octave" ]]; then
+  cd $WORKDIR/ilupack4m/makefiles && make TARGET=Octave
+  cd $WORKDIR/paracoder && octave --eval "build_m2c"
+  cd $WORKDIR/petsc4m && octave --eval "build_petsc"
+else
+  cd $WORKDIR/ilupack4m/makefiles && make TARGET=MATLAB
+  cd $WORKDIR/paracoder && octave --eval "build_m2c -matlab"
+  cd $WORKDIR/petsc4m && octave --eval "build_m2c -matlab"
+fi
