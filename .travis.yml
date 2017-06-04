@@ -4,6 +4,7 @@ services: docker
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
+  - echo $MATLAB_URL > url
   - 'docker build --tag fastsolve/desktop:dev . &&
      docker push fastsolve/desktop:dev &&
      touch success'
