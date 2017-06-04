@@ -6,7 +6,7 @@ WORKDIR=$DOCKER_HOME/fastsolve
 cd $WORKDIR/ilupack4m/makefiles && make TARGET=Octave
 
 # Build paracoder
-cd $WORKDIR/paracoder && octave --eval "build_m2c -force"
+cd $WORKDIR/paracoder && octave --eval "build_m2c" && octave --eval "build_m2c -matlab"
 
 # Build petsc4m
-cd $WORKDIR/petsc4m && octave --eval "build_petsc -force"
+cd $WORKDIR/petsc4m && octave --eval "build_petsc" && octave --eval "build_m2c -matlab"

@@ -9,7 +9,6 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
-ADD image/bin $DOCKER_HOME/bin
 
 # Build PETSc with debugging from source.
 RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
@@ -52,9 +51,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         meld \
         atom \
         clang-format && \
-    mkdir -p /usr/local/mlint && \
-    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
-    ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
     apt-get clean && \
     pip3 install -U \
          autopep8 \
@@ -89,16 +85,31 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         auto-detect-indentation \
         python-autopep8 \
         clang-format && \
+    \
+    mkdir -p /usr/local/mlint && \
+    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
+    ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
+    \
     curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
         tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
-USER $DOCKER_USER
+ADD image/etc /etc
+ADD image/bin $DOCKER_HOME/bin
 
-# Clone ilupack4m, paracoder, and petsc4m
+###############################################################
+# Temporarily install MATLAB
+# Build ilupack4m, paracoder, and petsc4m for Octave and MATLAB
+###############################################################
 RUN $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
+    \
+    curl -L "$(cat /tmp/url)" | bsdtar zxf - -C /usr/local --strip-components 2 && \
+    /etc/my_init.d/make_aliases.sh && \
+    rm -f $DOCKER_HOME/.octave && \
+    $DOCKER_HOME/bin/build_fastsolve && \
+    rm -rf /usr/local/MATLAB/R* && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
@@ -107,7 +118,8 @@ RUN $DOCKER_HOME/bin/pull_fastsolve && \
     echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
     \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
+    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME/fastsolve
-USER root
