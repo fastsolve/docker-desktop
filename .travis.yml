@@ -7,13 +7,6 @@ script:
   - 'docker build --tag fastsolve/desktop:dev . &&
      docker push fastsolve/desktop:dev &&
      touch success'
-# Trigger build of debug branch
-  - 'cat success &&
-     git clone -b debug https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git debug 2> /dev/null &&
-     cd debug &&
-     git commit --allow-empty -m "Trigger compilation." &&
-     git push &&
-     cd ..'
 # Trigger build of dev-matlab branch
   - 'cat success &&
      git clone -b dev-matlab https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev-matlab 2> /dev/null &&
