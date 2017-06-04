@@ -59,7 +59,7 @@ def parse_args(description):
                         help='The notebook to open.', default="")
 
     parser.add_argument('-v', '--volume',
-                        help='A data volume to be mounted to ~/fastsolve. ' +
+                        help='A data volume to be mounted to ~/' + APP + '. ' +
                         'The default is ' + APP + '_src.',
                         default=APP+"_src")
 
@@ -196,8 +196,8 @@ if __name__ == "__main__":
     volumes = ["-v", pwd + ":" + docker_home + "/shared"]
 
     if args.volume:
-        volumes += ["-v", args.volume + ":" + docker_home + "/fastsolve",
-                    "-w", docker_home + "/fastsolve"]
+        volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
+                    "-w", docker_home + "/" + APP]
     else:
         volumes += ["-w", docker_home + "/shared"]
 
