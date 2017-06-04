@@ -13,6 +13,8 @@ import sys
 import subprocess
 import time
 
+GROUP = "fastsolve"
+
 
 def parse_args(description):
     "Parse command-line arguments"
@@ -29,8 +31,8 @@ def parse_args(description):
 
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
-                        'The default is fastsolve/desktop.',
-                        default="fastsolve/desktop")
+                        'The default is ' + GROUP + '/ubuntu.',
+                        default=GROUP+"/ubuntu")
 
     parser.add_argument('-t', '--tag',
                         help='Tag of the image. The default is dev. ' +
@@ -290,14 +292,14 @@ if __name__ == "__main__":
 
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
-                                 "fastsolve_config"])
+                                 GROUP+"_config"])
     if args.clear:
         subprocess.check_output(["docker", "volume", "rm", "-f",
-                                 "fastsolve_src"])
+                                 GROUP+"_src"])
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
-               "-v", "fastsolve_src:" + docker_home + "/fastsolve",
-               "-v", "fastsolve_config:" + docker_home + "/.config",
+               "-v", GROUP+"_src:" + docker_home + "/" + GROUP,
+               "-v", GROUP+"_config:" + docker_home + "/.config",
                "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh",
                "-v", homedir + "/.gitconfig" +
                ":" + docker_home + "/.gitconfig"]
@@ -325,7 +327,8 @@ if __name__ == "__main__":
     else:
         size = args.size
 
-    envs = ["--env", "RESOLUT=" + size,
+    envs = ["--hostname", GROUP+"-desktop",
+            "--env", "RESOLUT=" + size,
             "--env", "HOST_UID=" + uid]
     if args.matlab:
         envs += ["--env", "MATLAB_VERSION=" + args.matlab]
@@ -334,7 +337,7 @@ if __name__ == "__main__":
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_vnc + ":6080"] +
                     envs + volumes +
-                    ["-w", docker_home + "/fastsolve",
+                    ["-w", docker_home + "/" + GROUP,
                      args.image,
                      "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
 

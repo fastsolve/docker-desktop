@@ -154,22 +154,8 @@ RUN mkdir -p /usr/local/paracoder && \
 ########################################################
 # Customization for user
 ########################################################
-ARG CDS_USER=fastsolve
-ARG OLD_USER=$DOCKER_USER
-
-ENV DOCKER_USER=$CDS_USER \
-    DOCKER_GROUP=$CDS_USER \
-    DOCKER_HOME=/home/$CDS_USER \
-    HOME=/home/$CDS_USER
-
-RUN usermod -l $DOCKER_USER -d $DOCKER_HOME -m $OLD_USER && \
-    groupmod -n $DOCKER_USER $OLD_USER && \
-    echo "$DOCKER_USER:docker" | chpasswd && \
-    echo "$DOCKER_USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
-    \
+RUN echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
     touch $DOCKER_HOME/.log/jupyter.log && \
-    touch $DOCKER_HOME/.log/vnc.log && \
     \
     echo 'addpath /usr/local/ilupack4m/matlab/ilupack' >> $DOCKER_HOME/.octaverc && \
     echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
@@ -178,6 +164,3 @@ RUN usermod -l $DOCKER_USER -d $DOCKER_HOME -m $OLD_USER && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
-
-ENTRYPOINT ["/sbin/my_init","--quiet","--","/sbin/setuser","fastsolve","/bin/bash","-l","-c"]
-CMD ["$DOCKER_SHELL","-l","-i"]

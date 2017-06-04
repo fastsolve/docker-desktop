@@ -13,6 +13,8 @@ import sys
 import subprocess
 import time
 
+GROUP = "fastsolve"
+
 
 def parse_args(description):
     "Parse command-line arguments"
@@ -29,16 +31,17 @@ def parse_args(description):
 
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
-                        'The default is fastsolve/desktop.',
-                        default="fastsolve/desktop")
+                        'The default is ' + GROUP + '/ubuntu.',
+                        default=GROUP+"/ubuntu")
+
     parser.add_argument('-t', '--tag',
-                        help='The tag of the image. The default is latest. ' +
+                        help='Tag of the image. The default is latest. ' +
                         'If the image already has a tag, its tag prevails.',
                         default="latest")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
-                        ' The default is not to pull.',
+                        'The default is not to pull.',
                         action='store_true',
                         default=False)
 
