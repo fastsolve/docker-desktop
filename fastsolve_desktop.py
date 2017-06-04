@@ -13,7 +13,7 @@ import sys
 import subprocess
 import time
 
-GROUP = "fastsolve"
+APP = "fastsolve"
 
 
 def parse_args(description):
@@ -31,8 +31,8 @@ def parse_args(description):
 
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
-                        'The default is ' + GROUP + '/desktop.',
-                        default=GROUP+"/desktop")
+                        'The default is ' + APP + '/desktop.',
+                        default=APP + "/desktop")
 
     parser.add_argument('-t', '--tag',
                         help='Tag of the image. The default is dev. ' +
@@ -69,6 +69,11 @@ def parse_args(description):
                         help='Size of the screen. The default is to obtaion ' +
                         'the size of the current screen.',
                         default="")
+
+    parser.add_argument('-v', '--volume',
+                        help='A data volume to be mounted to ~/fastsolve. ' +
+                        'The default is ' + APP + '_src.',
+                        default=APP+"_src")
 
     parser.add_argument('-n', '--no-browser',
                         help='Do not start web browser',
@@ -109,7 +114,7 @@ def id_generator(size=6):
     import string
 
     chars = string.ascii_uppercase + string.digits
-    return "desktop_" + (''.join(random.choice(chars) for _ in range(size)))
+    return APP + "-" + (''.join(random.choice(chars) for _ in range(size)))
 
 
 def find_free_port(port, retries):
@@ -292,17 +297,21 @@ if __name__ == "__main__":
 
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
-                                 GROUP+"_config"])
-    if args.clear:
-        subprocess.check_output(["docker", "volume", "rm", "-f",
-                                 GROUP+"_src"])
+                                 APP+"_config"])
+    if args.volume and args.clear:
+        subprocess.check_output(["docker", "volume", "rm", "-f", args.volume])
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
-               "-v", GROUP+"_src:" + docker_home + "/" + GROUP,
-               "-v", GROUP+"_config:" + docker_home + "/.config",
+               "-v", APP+"_config:" + docker_home + "/.config",
                "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh",
                "-v", homedir + "/.gitconfig" +
                ":" + docker_home + "/.gitconfig"]
+
+    if args.volume:
+        volumes += ["-v", args.volume + ":" + docker_home + "/fastsolve",
+                    "-w", docker_home + "/fastsolve"]
+    else:
+        volumes += ["-w", docker_home + "/shared"]
 
     if args.image.find('matlab') > 0:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
@@ -327,7 +336,7 @@ if __name__ == "__main__":
     else:
         size = args.size
 
-    envs = ["--hostname", GROUP+"-desktop",
+    envs = ["--hostname", container,
             "--env", "RESOLUT=" + size,
             "--env", "HOST_UID=" + uid]
     if args.matlab:
@@ -337,9 +346,8 @@ if __name__ == "__main__":
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_vnc + ":6080"] +
                     envs + volumes +
-                    ["-w", docker_home + "/" + GROUP,
-                     args.image,
-                     "startvnc.sh >> " + docker_home + "/.log/vnc.log"])
+                    [args.image, "startvnc.sh >> " +
+                     docker_home + "/.log/vnc.log"])
 
     wait_for_url = True
 

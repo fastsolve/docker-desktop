@@ -13,7 +13,7 @@ import sys
 import subprocess
 import time
 
-GROUP = "fastsolve"
+APP = "fastsolve"
 
 
 def parse_args(description):
@@ -31,8 +31,8 @@ def parse_args(description):
 
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
-                        'The default is ' + GROUP + '/ubuntu.',
-                        default=GROUP+"/ubuntu")
+                        'The default is ' + APP + '/desktop.',
+                        default=APP + "/desktop")
 
     parser.add_argument('-t', '--tag',
                         help='Tag of the image. The default is latest. ' +
@@ -45,6 +45,11 @@ def parse_args(description):
                         action='store_true',
                         default=False)
 
+    parser.add_argument('-c', '--clear',
+                        help='Clear the source tree by re-cloning it.',
+                        action='store_true',
+                        default=False)
+
     parser.add_argument('-d', '--detach',
                         help='Run in background and print container id',
                         action='store_true',
@@ -52,6 +57,11 @@ def parse_args(description):
 
     parser.add_argument('notebook', nargs='?',
                         help='The notebook to open.', default="")
+
+    parser.add_argument('-v', '--volume',
+                        help='A data volume to be mounted to ~/fastsolve. ' +
+                        'The default is ' + APP + '_src.',
+                        default=APP+"_src")
 
     parser.add_argument('-n', '--no-browser',
                         help='Do not start web browser',
@@ -87,7 +97,7 @@ def id_generator(size=6):
     import string
 
     chars = string.ascii_uppercase + string.digits
-    return "desktop_" + (''.join(random.choice(chars) for _ in range(size)))
+    return APP + "-" + (''.join(random.choice(chars) for _ in range(size)))
 
 
 def find_free_port(port, retries):
@@ -180,7 +190,16 @@ if __name__ == "__main__":
                                                "echo $DOCKER_HOME"]). \
             decode('utf-8')[:-1]
 
+    if args.volume and args.clear:
+        subprocess.check_output(["docker", "volume", "rm", "-f", args.volume])
+
     volumes = ["-v", pwd + ":" + docker_home + "/shared"]
+
+    if args.volume:
+        volumes += ["-v", args.volume + ":" + docker_home + "/fastsolve",
+                    "-w", docker_home + "/fastsolve"]
+    else:
+        volumes += ["-w", docker_home + "/shared"]
 
     print("Starting up docker image...")
     if subprocess.check_output(["docker", "--version"]). \
@@ -189,13 +208,13 @@ if __name__ == "__main__":
     else:
         rmflag = "--rm"
 
+    envs = ["--hostname", container,
+            "--env", "HOST_UID=" + uid]
     # Start the docker image in the background and pipe the stderr
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
-                     "-p", "127.0.0.1:" + port_http + ":" + port_http,
-                     "--env", "HOST_UID=" + uid] +
-                    volumes +
-                    ["-w", docker_home + "/shared",
-                     args.image,
+                     "-p", "127.0.0.1:" + port_http + ":" + port_http] +
+                    envs + volumes +
+                    [args.image,
                      "jupyter-notebook --no-browser --ip=0.0.0.0 --port " +
                      port_http +
                      " >> " + docker_home + "/.log/jupyter.log 2>&1"])
