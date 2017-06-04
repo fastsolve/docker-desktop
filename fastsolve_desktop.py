@@ -37,10 +37,9 @@ def parse_args(description):
                         'If the image already has a tag, its tag prevails.',
                         default="debug")
 
-    parser.add_argument('-m', '--matlab', nargs='?',
-                        help='MATLAB version (R2016b and R2017a are ' +
-                        'supported).  The default is R2016b.',
-                        default="R2016b")
+    parser.add_argument('-m', '--matlab',
+                        help='MATLAB version. Use either R2016b or R2017a.',
+                        default="")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
