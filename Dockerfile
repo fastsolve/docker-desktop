@@ -103,7 +103,7 @@ RUN $DOCKER_HOME/bin/pull_fastsolve && \
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "export PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
+    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
     \
     echo "@octave --force-gui" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
