@@ -10,8 +10,26 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-# Build PETSc with debugging from source.
-RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
+# Install debugging tools and
+# build PETSc with debugging from source
+RUN add-apt-repository ppa:webupd8team/atom && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ddd \
+        electric-fence \
+        valgrind \
+        meld \
+        atom \
+        clang-format && \
+    apt-get clean && \
+    pip3 install -U \
+         autopep8 \
+         flake8 \
+         PyQt5 \
+         spyder && \
+    rm -rf /var/lib/apt/lists/* && \
+    \
+    curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
     tar zx && \
     cd petsc-${PETSC_VERSION} && \
     unset PETSC_DIR && \
@@ -41,27 +59,18 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 
+COPY url /tmp/url
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
+RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
-# Install debugging tools and Atom
-RUN add-apt-repository ppa:webupd8team/atom && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ddd \
-        electric-fence \
-        valgrind \
-        meld \
-        atom \
-        clang-format && \
-    apt-get clean && \
-    pip3 install -U \
-         autopep8 \
-         flake8 \
-         PyQt5 \
-         spyder && \
-    rm -rf /var/lib/apt/lists/* && \
-    apm install \
+USER $DOCKER_USER
+
+###############################################################
+# Install Atom packages; Temporarily install MATLAB
+# Build ilupack4m, paracoder, and petsc4m for Octave and MATLAB
+###############################################################
+RUN apm install \
         language-cpp14 \
         language-matlab \
         language-fortran \
@@ -89,27 +98,23 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         python-autopep8 \
         clang-format && \
     \
-    mkdir -p /usr/local/mlint && \
-    curl -L https://goo.gl/ExjLDP | bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
-    ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
+    sudo mkdir -p /usr/local/mlint && \
+    curl -L https://goo.gl/ExjLDP | \
+        sudo bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
+    sudo ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
     \
     curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
-        tar xf - -C $DOCKER_HOME && \
+    tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
-
-USER $DOCKER_USER
-
-###############################################################
-# Temporarily install MATLAB
-# Build ilupack4m, paracoder, and petsc4m for Octave and MATLAB
-###############################################################
-RUN $DOCKER_HOME/bin/pull_fastsolve && \
+    \
+    $DOCKER_HOME/bin/pull_fastsolve && \
+    $DOCKER_HOME/bin/build_fastsolve && \
     \
     curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     sudo /etc/my_init.d/make_aliases.sh && \
+    \
     rm -f $DOCKER_HOME/.octaverc && \
-    $DOCKER_HOME/bin/build_fastsolve && \
+    $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
