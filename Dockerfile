@@ -11,10 +11,44 @@ USER root
 WORKDIR /tmp
 ADD image/bin $DOCKER_HOME/bin
 
+# Build PETSc with debugging from source.
+RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
+    tar zx && \
+    cd petsc-${PETSC_VERSION} && \
+    unset PETSC_DIR && \
+    ./configure --COPTFLAGS="-g" \
+                --CXXOPTFLAGS="-g" \
+                --FOPTFLAGS="-g" \
+                --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
+                --with-c-support \
+                --with-debugging=1 \
+                --with-shared-libraries \
+                --download-suitesparse \
+                --download-superlu \
+                --download-superlu_dist \
+                --download-scalapack \
+                --download-metis \
+                --download-parmetis \
+                --download-ptscotch \
+                --download-hypre \
+                --download-mumps \
+                --download-blacs \
+                --download-spai \
+                --download-ml \
+                --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
+     make && \
+     make install && \
+     rm -rf /tmp/* /var/tmp/*
+
+ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
+
 # Install debugging tools and Atom
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
+        ddd \
+        electric-fence \
+        valgrind \
         meld \
         atom \
         clang-format && \
