@@ -82,11 +82,6 @@ def parse_args(description):
 
     args = parser.parse_args()
 
-    if args.matlab and args.tag.find('matlab') < 0:
-        args.tag = args.tag + "-matlab"
-    elif args.tag.find('matlab') > 0 and not args.matlab:
-        args.matlab = "R2016b"
-
     # Append tag to image if the image has no tag
     if args.image.find(':') < 0:
         args.image += ':' + args.tag
@@ -313,7 +308,7 @@ if __name__ == "__main__":
     else:
         volumes += ["-w", docker_home + "/shared"]
 
-    if args.image.find('matlab') > 0:
+    if args.matlab:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
                     "-v", "matlab_config:" + docker_home + "/.matlab"]
 
