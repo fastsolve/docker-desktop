@@ -92,7 +92,6 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
          flake8 \
          PyQt5 \
          spyder && \
-         && \
     \
     sudo mkdir -p /usr/local/mlint && \
     curl -L https://goo.gl/ExjLDP | \
