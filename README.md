@@ -43,7 +43,13 @@ python fastsolve_desktop.py -p
 ```
 This will download and run the Docker image and then launch your default web browser to show the desktop environment. The `-p` option is optional, and it instructs the Python script to pull and update the image to the latest version.
 
-To see additional options, use the command
+For FastSolve developers, you can start the Docker image with `MATLAB` using the command
+```
+python fastsolve_desktop.py -p -m
+```
+where the `-m` option would initiate installation of MATLAB. It will prompt you to enter your Bitbucket username and password for authentication. After the desktop launches, you may be asked to activate MATLAB using your MathWorks account when you launch MATLAB.
+
+For additional command-line options, use the command
 ```
 python fastsolve_desktop.py -h
 ```
