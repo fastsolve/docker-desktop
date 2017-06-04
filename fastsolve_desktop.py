@@ -35,7 +35,7 @@ def parse_args(description):
     parser.add_argument('-t', '--tag',
                         help='Tag of the image. The default is dev. ' +
                         'If the image already has a tag, its tag prevails.',
-                        default="debug")
+                        default="dev")
 
     parser.add_argument('-m', '--matlab',
                         help='MATLAB version. Use either R2016b or R2017a.',
