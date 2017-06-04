@@ -74,7 +74,7 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
     $DOCKER_HOME/bin/build_fastsolve && \
     \
     curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
-    sudo /etc/my_init.d/make_aliases.sh && \
+    MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
     \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
