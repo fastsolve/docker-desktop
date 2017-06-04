@@ -108,11 +108,10 @@ RUN $DOCKER_HOME/bin/pull_fastsolve && \
     \
     curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     sudo /etc/my_init.d/make_aliases.sh && \
-    rm -f $DOCKER_HOME/.octave && \
+    rm -f $DOCKER_HOME/.octaverc && \
     $DOCKER_HOME/bin/build_fastsolve && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
-    rm -f $DOCKER_HOME/.octaverc && \
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
