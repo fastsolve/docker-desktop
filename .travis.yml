@@ -26,6 +26,12 @@ script:
      (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
       docker push fastsolve/desktop &&
       touch success)'
+  # Trigger build of the latest branch of numgeom-desktop
+  - '[[ ! -f success ]] ||
+     (git clone https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
+      cd numgeom &&
+      git commit --allow-empty -m "Trigger compilation." &&
+      git push && cd ..)'
   # Test startup scripts and trigger build of dev branch
   - '[[ ! -f success ]] ||
        (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
