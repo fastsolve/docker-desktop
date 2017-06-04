@@ -27,11 +27,11 @@ script:
       docker push fastsolve/desktop &&
       touch success)'
   # Test startup scripts and trigger build of dev branch
-  - './fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q) &&
-     ./fastsolve_jupyter.py -d -n -t latest && docker stop $(docker ps -q) &&
-     ([[ ! -f success ]] ||
+  - '[[ ! -f success ]] ||
        (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
        cd dev &&
        git commit --allow-empty -m "Trigger compilation." &&
-       git push))'
+       git push)'
+  - ./fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q)
+  - ./fastsolve_jupyter.py -d -n -t latest && docker stop $(docker ps -q)
   - docker images
