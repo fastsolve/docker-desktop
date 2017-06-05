@@ -20,13 +20,11 @@ script:
   - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   # Build only if the commit range of a push contains Dockerfile or .travis.yml
-  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
-        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
-            grep -e Dockerfile -e .travis.yml)" ]] || [[ "$XVFB" != "1" ]] ||
-     (docker build --tag fastsolve/desktop:mkl . &&
-      docker push fastsolve/desktop:mkl &&
-      touch success)'
+  - 'docker build --tag fastsolve/desktop:mkl . &&
+     docker push fastsolve/desktop:mkl &&
+     touch success'
   # Test scripts
-  - ./fastsolve_desktop.py -d -n -t mkl && docker stop $(docker ps -q)
-  - ./fastsolve_jupyter.py -d -n -t mkl && docker stop $(docker ps -q)
+  - git clone https://github.com/fastsolve/fastsolve-desktop master
+  - master/fastsolve_desktop.py -d -n -t mkl && docker stop $(docker ps -q)
+  - master/fastsolve_jupyter.py -d -n -t mkl && docker stop $(docker ps -q)
   - docker images
