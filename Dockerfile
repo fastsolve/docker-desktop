@@ -10,15 +10,87 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
+ENV OCTAVE_VERSION=4.2.1
+
 # Install system packages
-RUN apt-add-repository ppa:octave/stable && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential \
+        build-essential gawk gfortran \
+        gnuplot-x11 \
+        texi2html \
+        icoutils \
+        libxft-dev \
+        gperf \
+        libbison-dev \
+        libqhull-dev \
+        libglpk-dev \
+        libcurl4-gnutls-dev \
+        libfltk-cairo1.3 \
+        libfltk-forms1.3 \
+        libfltk-images1.3 \
+        libfltk1.3-dev \
+        librsvg2-dev \
+        libqrupdate-dev \
+        libgl2ps-dev \
+        libarpack2-dev \
+        libreadline-dev \
+        libncurses-dev \
+        hdf5-helpers \
+        libhdf5-cpp-11 \
+        libhdf5-dev \
+        llvm-dev \
+        openjdk-8-jdk \
+        openjdk-8-jre-headless \
+        texinfo \
+        libfftw3-dev \
+        libgraphicsmagick++1-dev \
+        libgraphicsmagick1-dev \
+        libjasper-dev \
+        libfreeimage-dev \
+        transfig \
+        epstool \
+        librsvg2-bin \
+        libosmesa6-dev \
+        libsndfile-dev \
+        libsndfile1-dev \
+        libportaudiocpp0 \
+        portaudio19-dev \
+        lzip \
+        libqt5core5a \
+        libqt5gui5 \
+        libqt5network5 \
+        libqt5opengl5 \
+        libqt5opengl5-dev \
+        libqt5scintilla2-dev \
+        qttools5-dev-tools \
+        qt5-default \
+        libopenblas-base \
+        libatlas3-base \
+        libatlas-dev \
+        liblapack-dev \
+        ghostscript \
+        pstoedit \
+        libaec-dev \
+        libblas-dev \
+        libbtf1.2.1 \
+        libcsparse3.1.4 \
+        libexif-dev \
+        libflac-dev \
+        libftgl-dev \
+        libftgl2 \
+        libjack-dev \
+        libklu1.3.3 \
+        libldl2.2.1 \
+        libogg-dev \
+        libspqr2.0.2 \
+        libsuitesparse-dev \
+        libvorbis-dev \
+        libwmf-dev \
+        uuid-dev \
+        pandoc \
+        ttf-dejavu \
+        \
         python3-dev \
-        gfortran \
-        cmake \
-        bison \
         flex \
         git \
         bash-completion \
@@ -38,19 +110,14 @@ RUN apt-add-repository ppa:octave/stable && \
         libmpich-dev \
         libopenblas-dev \
         mpich && \
-    apt-get install -y --no-install-recommends \
-        octave \
-        gnuplot-x11 \
-        liboctave-dev \
-        libopenblas-base \
-        libatlas3-base \
-        pstoedit \
-        octave-info \
-        \
-        pandoc \
-        ttf-dejavu && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    curl -s ftp://ftp.gnu.org/gnu/octave/octave-${OCTAVE_VERSION}.tar.gz | tar zx && \
+    cd octave-* && \
+    ./configure --prefix=/usr/local && \
+    make CFLAGS=-O CXXFLAGS=-O LDFLAGS= -j 2 && \
+    make install && \
+    rm -rf /tmp/* /var/tmp/*
 
 # Install SciPy, SymPy, Pandas, and Jupyter Notebook for Python3 and Octave
 # Customize Atom for Octave and MATLAB
