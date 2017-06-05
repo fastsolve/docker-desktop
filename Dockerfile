@@ -91,6 +91,9 @@ RUN apt-get update && \
         ttf-dejavu \
         \
         python3-dev \
+        gfortran \
+        cmake \
+        bison \
         flex \
         git \
         bash-completion \
