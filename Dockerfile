@@ -41,10 +41,27 @@ RUN apt-get update && \
         PyDrive && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Install MKL
+# Source: https://software.intel.com/en-us/articles/installing-intel-free-libs-and-python-apt-repo
+ENV MKL_VERSION=2017.2.050 MKL_SHORTVER=174
+ENV MKLROOT=/opt/intel/compilers_and_libraries_2017.2.174/linux/mkl
+ENV LD_LIBRARY_PATH=$MKLROOT/lib/intel64
+
+RUN curl -O http://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
+    apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
+    sh -c 'echo deb http://apt.repos.intel.com/mkl all main > /etc/apt/sources.list.d/intel-mkl.list' && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        intel-mkl-rt-$MKL_SHORTVER \
+        intel-mkl-common-$MKL_SHORTVER \
+        intel-mkl-common-c-$MKL_SHORTVER \
+        intel-mkl-common-c-64bit-$MKL_SHORTVER \
+        intel-tbb-libs-$MKL_SHORTVER && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # Install PETSc from source.
-ENV PETSC_VERSION=3.7.6 \
-    OPENBLAS_NUM_THREADS=1 \
-    OPENBLAS_VERBOSE=0
+ENV PETSC_VERSION=3.7.6
 
 RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
     tar zx && \
@@ -52,7 +69,7 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
     ./configure --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2" \
                 --FOPTFLAGS="-O2" \
-                --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
+                --with-blas-lapack-dir=$MKLROOT \
                 --with-c-support \
                 --with-debugging=0 \
                 --with-shared-libraries \
@@ -60,12 +77,12 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --download-superlu \
                 --download-superlu_dist \
                 --download-scalapack \
+                --download-blacs \
                 --download-metis \
                 --download-parmetis \
                 --download-ptscotch \
                 --download-hypre \
                 --download-mumps \
-                --download-blacs \
                 --download-spai \
                 --download-ml \
                 --prefix=/usr/local/petsc-$PETSC_VERSION && \
