@@ -24,7 +24,7 @@ script:
      docker push fastsolve/desktop:cuda &&
      touch success'
   # Test scripts
-  - git clone https://github.com/fastsolve/fastsolve-desktop master
+  - git clone https://github.com/fastsolve/docker-desktop master
   - master/fastsolve_desktop.py -d -n -t cuda && docker stop $(docker ps -q)
   - master/fastsolve_jupyter.py -d -n -t cuda && docker stop $(docker ps -q)
   - docker images
