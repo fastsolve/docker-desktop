@@ -96,6 +96,8 @@ RUN mkdir -p /usr/local/ilupack4m && \
 ########################################################
 # Customization for user
 ########################################################
+ADD image/matlab $DOCKER_HOME/.matlab
+
 RUN echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
     touch $DOCKER_HOME/.log/jupyter.log && \
     \
