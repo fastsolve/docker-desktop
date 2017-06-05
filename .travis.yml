@@ -23,21 +23,10 @@ script:
   - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
             grep -e Dockerfile -e .travis.yml)" ]] || [[ "$XVFB" != "1" ]] ||
-     (docker build --tag fastsolve/desktop:16.04 --tag fastsolve/desktop:latest . &&
-      docker push fastsolve/desktop &&
+     (docker build --tag fastsolve/desktop:mkl . &&
+      docker push fastsolve/desktop:mkl &&
       touch success)'
-  # Trigger build of the latest branch of numgeom-desktop
-  - '[[ ! -f success ]] ||
-     (git clone https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
-      cd numgeom &&
-      git commit --allow-empty -m "Trigger compilation." &&
-      git push && cd ..)'
-  # Test startup scripts and trigger build of dev branch
-  - '[[ ! -f success ]] ||
-       (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev 2> /dev/null &&
-       cd dev &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push)'
-  - ./fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q)
-  - ./fastsolve_jupyter.py -d -n -t latest && docker stop $(docker ps -q)
+  # Test scripts
+  - ./fastsolve_desktop.py -d -n -t mkl && docker stop $(docker ps -q)
+  - ./fastsolve_jupyter.py -d -n -t mkl && docker stop $(docker ps -q)
   - docker images
