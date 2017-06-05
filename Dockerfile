@@ -4,121 +4,60 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM x11vnc/octave-desktop:latest
+FROM fastsolve/desktop:latest
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
 
-# Install system packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        cmake \
-        bison \
-        flex \
-        git \
-        bash-completion \
-        bsdtar \
-        rsync \
-        wget \
-        gdb \
-        ccache \
-        \
-        libboost-filesystem-dev \
-        libboost-iostreams-dev \
-        libboost-program-options-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libboost-timer-dev \
-        liblapack-dev \
-        libmpich-dev \
-        libopenblas-dev \
-        mpich && \
-    apt-get clean && \
-    pip3 install -U \
-        requests \
-        progressbar2 \
-        PyDrive && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV CUDA_VERSION=8.0.61-1
+ENV CUDA_PKG_VERSION=8-0=8.0.61-1
 
-# Install MKL
-# Source: https://software.intel.com/en-us/articles/installing-intel-free-libs-and-python-apt-repo
-ENV MKL_VERSION=2017.2.050 MKL_SHORTVER=174
-ENV MKLROOT=/opt/intel/compilers_and_libraries_2017.2.174/linux/mkl
-ENV LD_LIBRARY_PATH=$MKLROOT/lib/intel64
-
-RUN curl -O http://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
-    apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
-    sh -c 'echo deb http://apt.repos.intel.com/mkl all main > /etc/apt/sources.list.d/intel-mkl.list' && \
+# Install CUDA runtime
+RUN curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_${CUDA_VERSION}_amd64.deb && \
+    dpkg -i cuda-repo-ubuntu1604_${CUDA_VERSION}_amd64.deb && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        intel-mkl-rt-$MKL_SHORTVER \
-        intel-mkl-common-$MKL_SHORTVER \
-        intel-mkl-common-c-$MKL_SHORTVER \
-        intel-mkl-common-c-64bit-$MKL_SHORTVER \
-        intel-tbb-libs-$MKL_SHORTVER && \
+        cuda-nvrtc-$CUDA_PKG_VERSION \
+        cuda-nvgraph-$CUDA_PKG_VERSION \
+        cuda-cusolver-$CUDA_PKG_VERSION \
+        cuda-cublas-$CUDA_PKG_VERSION \
+        cuda-cufft-$CUDA_PKG_VERSION \
+        cuda-curand-$CUDA_PKG_VERSION \
+        cuda-cusparse-$CUDA_PKG_VERSION \
+        cuda-npp-$CUDA_PKG_VERSION \
+        cuda-cudart-$CUDA_PKG_VERSION && \
+    ln -s cuda-8.0 /usr/local/cuda && \
+    echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && ldconfig && \
+    echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install PETSc from source.
-ENV PETSC_VERSION=3.7.6
+# Install CUDA devel
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      cuda-core-$CUDA_PKG_VERSION \
+      cuda-misc-headers-$CUDA_PKG_VERSION \
+      cuda-command-line-tools-$CUDA_PKG_VERSION \
+      cuda-nvrtc-dev-$CUDA_PKG_VERSION \
+      cuda-nvml-dev-$CUDA_PKG_VERSION \
+      cuda-nvgraph-dev-$CUDA_PKG_VERSION \
+      cuda-cusolver-dev-$CUDA_PKG_VERSION \
+      cuda-cublas-dev-$CUDA_PKG_VERSION \
+      cuda-cufft-dev-$CUDA_PKG_VERSION \
+      cuda-curand-dev-$CUDA_PKG_VERSION \
+      cuda-cusparse-dev-$CUDA_PKG_VERSION \
+      cuda-npp-dev-$CUDA_PKG_VERSION \
+      cuda-cudart-dev-$CUDA_PKG_VERSION \
+      cuda-driver-dev-$CUDA_PKG_VERSION && \
+    apt-get clean && \
+    echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && ldconfig && \
+    echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
+    echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
-    tar zx && \
-    cd petsc-${PETSC_VERSION} && \
-    ./configure --COPTFLAGS="-O2" \
-                --CXXOPTFLAGS="-O2" \
-                --FOPTFLAGS="-O2" \
-                --with-blas-lapack-dir=$MKLROOT \
-                --with-c-support \
-                --with-debugging=0 \
-                --with-shared-libraries \
-                --download-suitesparse \
-                --download-superlu \
-                --download-superlu_dist \
-                --download-scalapack \
-                --download-blacs \
-                --download-metis \
-                --download-parmetis \
-                --download-ptscotch \
-                --download-hypre \
-                --download-mumps \
-                --download-spai \
-                --download-ml \
-                --prefix=/usr/local/petsc-$PETSC_VERSION && \
-     make && \
-     make install && \
-     rm -rf /tmp/* /var/tmp/*
-
-ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
-
-# Install ilupack4m, paracoder and petsc4m
-RUN mkdir -p /usr/local/ilupack4m && \
-    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m/makefiles && make TARGET=Octave && \
-    \
-    mkdir -p /usr/local/paracoder && \
-    curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/paracoder && \
-    cd /usr/local/paracoder && octave --eval "build_m2c -force" && \
-    rm -rf `find /usr/local/paracoder -name lib` && \
-    \
-    mkdir -p /usr/local/petsc4m && \
-    curl -s  -L https://github.com/fastsolve/petsc4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/petsc4m && \
-    cd /usr/local/petsc4m && octave --eval "build_petsc -force" && \
-    rm -rf `find /usr/local/petsc4m -name lib`
-
-########################################################
-# Customization for user
-########################################################
-RUN echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
-    touch $DOCKER_HOME/.log/jupyter.log && \
-    \
-    echo 'addpath /usr/local/ilupack4m/matlab/ilupack' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/petsc4m/.octaverc' >> $DOCKER_HOME/.octaverc && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+ENV PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:$PATH
+ENV LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH
 
 WORKDIR $DOCKER_HOME
