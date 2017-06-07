@@ -14,12 +14,6 @@ script:
       cd numgeom &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
-# Test startup scripts and trigger build of dev branch
-  - '[[ ! -f success ]] ||
-       (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev &&
-       cd dev &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
