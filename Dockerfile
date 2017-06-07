@@ -103,5 +103,5 @@ RUN sudo pip3 install -U \
           clang-format && \
     ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom
 
-WORKDIR $DOCKER_HOME/fastsolve
+WORKDIR $DOCKER_HOME
 USER root
