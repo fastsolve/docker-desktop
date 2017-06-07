@@ -64,7 +64,8 @@ USER $DOCKER_USER
 ###############################################################
 # Customize Atom
 ###############################################################
-RUN sudo pip3 install -U \
+RUN echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    sudo pip3 install -U \
          autopep8 \
          flake8 \
          PyQt5 \
