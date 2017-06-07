@@ -124,7 +124,7 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
           auto-detect-indentation \
           python-autopep8 \
           clang-format && \
-    ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom && \
+    ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom
 
 
 WORKDIR $DOCKER_HOME/fastsolve
