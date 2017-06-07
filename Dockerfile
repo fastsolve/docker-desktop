@@ -97,7 +97,6 @@ RUN mkdir -p /usr/local/ilupack4m && \
 # Customization for user
 ########################################################
 ADD config/matlab $DOCKER_HOME/.matlab
-ADD config/atom $DOCKER_HOME/.atom
 
 RUN sed -e 's/autohide=0/autohide=1/g' -i \
         $DOCKER_HOME/.config/lxpanel/LXDE/panels/panel && \
