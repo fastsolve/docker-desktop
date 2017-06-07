@@ -4,16 +4,15 @@ services: docker
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - echo $MATLAB_URL > url
   - 'docker build --tag fastsolve/desktop:dev-env . &&
      docker push fastsolve/desktop:dev-env &&
      touch success'
-# Trigger build of dev-env branch of numgeom-desktop
+# Test startup scripts and trigger build of dev branch
   - '[[ ! -f success ]] ||
-     (git clone -b dev-env https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
-      cd numgeom &&
-      git commit --allow-empty -m "Trigger compilation." &&
-      git push && cd ..)'
+       (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev &&
+       cd dev &&
+       git commit --allow-empty -m "Trigger compilation." &&
+       git push)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&

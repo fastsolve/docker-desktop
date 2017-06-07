@@ -54,7 +54,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 
-COPY url /tmp/url
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 ADD config/atom $DOCKER_HOME/.config/atom
