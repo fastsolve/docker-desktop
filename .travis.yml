@@ -8,9 +8,9 @@ script:
   - 'docker build --tag fastsolve/desktop:dev . &&
      docker push fastsolve/desktop:dev &&
      touch success'
-# Trigger build of dev branch of numgeom-desktop
+# Trigger build of ci-dev branch of numgeom-desktop
   - '[[ ! -f success ]] ||
-     (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
+     (git clone -b ci-dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
       cd numgeom &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
