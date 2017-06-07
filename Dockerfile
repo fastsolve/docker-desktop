@@ -63,31 +63,9 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin $DOCKER_HOME/.config
 USER $DOCKER_USER
 
 ###############################################################
-# Temporarily install MATLAB and build ilupack4m, paracoder, and
-# petsc4m for Octave and MATLAB. Install Atom packages.
+# Customize Atom
 ###############################################################
-RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
-    tar xf - -C $DOCKER_HOME && \
-    ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
-    \
-    rm -f $DOCKER_HOME/.octaverc && \
-    $DOCKER_HOME/bin/pull_fastsolve && \
-    $DOCKER_HOME/bin/build_fastsolve && \
-    \
-    curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
-    MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
-    \
-    $DOCKER_HOME/bin/build_fastsolve -matlab && \
-    sudo rm -rf /usr/local/MATLAB/R* && \
-    \
-    echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
-    \
-    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    \
-    sudo pip3 install -U \
+RUN sudo pip3 install -U \
          autopep8 \
          flake8 \
          PyQt5 \
@@ -125,7 +103,6 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
           python-autopep8 \
           clang-format && \
     ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom
-
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root

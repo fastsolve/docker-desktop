@@ -5,18 +5,18 @@ services: docker
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   - echo $MATLAB_URL > url
-  - 'docker build --tag fastsolve/desktop:dev . &&
-     docker push fastsolve/desktop:dev &&
+  - 'docker build --tag fastsolve/desktop:dev-env . &&
+     docker push fastsolve/desktop:dev-env &&
      touch success'
-# Trigger build of dev branch of numgeom-desktop
+# Trigger build of dev-env branch of numgeom-desktop
   - '[[ ! -f success ]] ||
-     (git clone -b dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
+     (git clone -b dev-env https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
       cd numgeom &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
-    (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
-     master/fastsolve_desktop.py -d -n -t dev && docker stop $(docker ps -q) &&
-     master/fastsolve_jupyter.py -d -n -t dev && docker stop $(docker ps -q))'
+    (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&
+     master/fastsolve_desktop.py -d -n -t dev-env && docker stop $(docker ps -q) &&
+     master/fastsolve_jupyter.py -d -n -t dev-env && docker stop $(docker ps -q))'
   - docker images
