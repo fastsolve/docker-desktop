@@ -57,7 +57,8 @@ ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 COPY url /tmp/url
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
+ADD config/atom $DOCKER_HOME/.config/atom
+RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin $DOCKER_HOME/.config
 
 USER $DOCKER_USER
 
@@ -122,7 +123,9 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
           python-debugger \
           auto-detect-indentation \
           python-autopep8 \
-          clang-format
+          clang-format && \
+    ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom && \
+
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root
