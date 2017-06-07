@@ -28,14 +28,14 @@ script:
       touch success)'
   # Trigger build of the latest branch of numgeom-desktop
   - '[[ ! -f success ]] ||
-     (git clone https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
+     (git clone -b ci-master https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
       cd numgeom &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
-  # Test startup scripts and trigger build of dev-env branch
+  # Test startup scripts and trigger build of ci-dev-env branch
   - '[[ ! -f success ]] ||
-       (git clone -b dev-env https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git dev-env &&
-       cd dev-env &&
+       (git clone -b ci-dev-env https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-dev-env &&
+       cd ci-dev-env &&
        git commit --allow-empty -m "Trigger compilation." &&
        git push)'
   - ./fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q)
