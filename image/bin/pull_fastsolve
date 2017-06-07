@@ -14,7 +14,7 @@ else
     cd $WORKDIR
     # Remove octave-workspace if it exists
     rm -f paracoder/octave-workspace
-    git clone git@github.com:fastsolve/paracoder.git
+    git clone --depth 1 git@github.com:fastsolve/paracoder.git
 fi
 
 # Clone ilupack4m
@@ -27,7 +27,7 @@ else
     cd $WORKDIR
     # Remove octave-workspace if it exists
     rm -f ilupack4m/octave-workspace
-    git clone git@github.com:fastsolve/ilupack4m.git
+    git clone --depth 1 git@github.com:fastsolve/ilupack4m.git
 fi
 
 # Clone petsc4m
@@ -40,7 +40,7 @@ else
     cd $WORKDIR
     # Remove octave-workspace if it exists
     rm -f ilupack4m/octave-workspace
-    git clone git@github.com:fastsolve/petsc4m.git
+    git clone --depth 1 git@github.com:fastsolve/petsc4m.git
 fi
 
 # Clone matrices
@@ -53,5 +53,5 @@ else
     cd $WORKDIR
     # Remove octave-workspace if it exists
     rm -f ilupack4m/octave-workspace
-    git clone git@github.com:fastsolve/matrices.git
+    git clone --depth 1 git@github.com:fastsolve/matrices.git
 fi
