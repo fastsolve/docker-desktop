@@ -6,13 +6,19 @@ script:
   - 'docker build --tag fastsolve/desktop:base . &&
      docker push fastsolve/desktop:base &&
      touch success'
-  # Test startup scripts and trigger build of ci-master branch
+  # Trigger build of ci-master branch
   - '[[ ! -f success ]] ||
        (git clone -b ci-master https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-master &&
        cd ci-master &&
        git commit --allow-empty -m "Trigger compilation." &&
        git push)'
-# Test scripts
+  # Trigger build of ci-dev-env branch
+  - '[[ ! -f success ]] ||
+       (git clone -b ci-dev-env https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-dev-env &&
+       cd ci-dev-env &&
+       git commit --allow-empty -m "Trigger compilation." &&
+       git push)'
+  # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
      master/fastsolve_desktop.py -d -n -t base && docker stop $(docker ps -q) &&
