@@ -181,7 +181,10 @@ def download_matlab(version, user, image, volumes):
 
     if installed.find(b"installed") < 0:
         print("Downloading MATLAB...")
-        bb_user = input("Enter your Bitbucket Username: ")
+        if sys.version_info.major > 2:
+            bb_user = input("Enter your Bitbucket Username: ")
+        else:
+            bb_user = raw_input("Enter your Bitbucket Username: ")
         bb_token = getpass("Enter your Bitbucket Token: ")
 
         try:
