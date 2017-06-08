@@ -34,9 +34,7 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile && \
-    \
-    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart
+    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root
