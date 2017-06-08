@@ -41,8 +41,8 @@ def parse_args(description):
 
     parser.add_argument('-m', '--matlab', nargs='?',
                         help='Specify MATLAB version. Supported versions ' +
-                        'include R2016b or R2017a. The default is R2016b.',
-                        const="R2016b", default="")
+                        'include R2016b or R2017a. The default is R2017a.',
+                        const="R2017a", default="")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
