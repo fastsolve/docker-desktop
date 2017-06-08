@@ -32,12 +32,6 @@ script:
       cd numgeom &&
       git commit --allow-empty -m "Trigger compilation." &&
       git push && cd ..)'
-  # Test startup scripts and trigger build of ci-dev-env branch
-  - '[[ ! -f success ]] ||
-       (git clone -b ci-dev-env https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-dev-env &&
-       cd ci-dev-env &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push)'
   - ./fastsolve_desktop.py -d -n -t latest && docker stop $(docker ps -q)
   - ./fastsolve_jupyter.py -d -n -t latest && docker stop $(docker ps -q)
   - docker images
