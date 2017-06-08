@@ -4,7 +4,7 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM fastsolve/desktop:latest
+FROM fastsolve/desktop:dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
