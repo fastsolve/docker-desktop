@@ -75,24 +75,6 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
 
-# Install ilupack4m, paracoder and petsc4m
-RUN mkdir -p /usr/local/ilupack4m && \
-    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m/makefiles && make TARGET=Octave && \
-    \
-    mkdir -p /usr/local/paracoder && \
-    curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/paracoder && \
-    cd /usr/local/paracoder && octave --eval "build_m2c -force" && \
-    rm -rf `find /usr/local/paracoder -name lib` && \
-    \
-    mkdir -p /usr/local/petsc4m && \
-    curl -s  -L https://github.com/fastsolve/petsc4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/petsc4m && \
-    cd /usr/local/petsc4m && octave --eval "build_petsc -force" && \
-    rm -rf `find /usr/local/petsc4m -name lib`
-
 ########################################################
 # Customization for user
 ########################################################
@@ -102,10 +84,6 @@ RUN sed -e 's/autohide=0/autohide=1/g' -i \
         $DOCKER_HOME/.config/lxpanel/LXDE/panels/panel && \
     echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
     touch $DOCKER_HOME/.log/jupyter.log && \
-    \
-    echo 'addpath /usr/local/ilupack4m/matlab/ilupack' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/petsc4m/.octaverc' >> $DOCKER_HOME/.octaverc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
