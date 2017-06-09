@@ -38,7 +38,8 @@ RUN apt-get update && \
     pip3 install -U \
         requests \
         progressbar2 \
-        PyDrive && \
+        PyDrive \
+        hurry.filesize && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install PETSc from source.
