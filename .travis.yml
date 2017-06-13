@@ -2,11 +2,14 @@ language: python
 
 services: docker
 
+env: BRANCH=dev
+
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - echo $MATLAB_URL > url
-  - 'docker build --tag fastsolve/desktop:dev . &&
-     docker push fastsolve/desktop:dev &&
+  - 'docker build --tag fastsolve/desktop:$BRANCH
+                  --build-arg SSHKEY_ID=$SSHKEY_ID
+                  --build-arg MFILE_ID=$MFILE_ID . &&
+     docker push fastsolve/desktop &&
      touch success'
 # Trigger build of ci-dev branch of numgeom-desktop
   - '[[ ! -f success ]] ||
@@ -16,7 +19,7 @@ script:
       git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
-    (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
-     master/fastsolve_desktop.py -d -n -t dev && docker stop $(docker ps -q) &&
-     master/fastsolve_jupyter.py -d -n -t dev && docker stop $(docker ps -q))'
+    (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&
+     master/fastsolve_desktop.py -d -n -t $BRANCH && docker stop $(docker ps -q) &&
+     master/fastsolve_jupyter.py -d -n -t $BRANCH && docker stop $(docker ps -q))'
   - docker images
