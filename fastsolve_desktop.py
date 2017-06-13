@@ -178,10 +178,6 @@ def download_matlab(version, user, image, volumes):
                                          'then echo "installed"; fi'])
 
     if installed.find(b"installed") < 0:
-        if args.no_browser:
-            print('Browser is required to install MATLAB.')
-            sys.exit(-1)
-
         # Downloading software using Google authentication
         try:
             port_http = find_free_port(8080, 50)
@@ -199,8 +195,12 @@ def download_matlab(version, user, image, volumes):
                     # Open browser if found URL
                     print('Log in with your authorized Google account in the ' +
                           'webbrowser to get verification code.')
-                    webbrowser.open(line[ind:-1])
-                    sys.stdout.flush()
+                    if args.no_browser:
+                        webbrowser.open(line[ind:-1])
+                    else:
+                        print('Open browswe at URL:')
+                        print(line[ind:-1])
+
                     sys.stdout.write('\r\nEnter verification code: ')
                     sys.stdout.flush()
                     break
