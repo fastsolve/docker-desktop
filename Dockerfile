@@ -9,23 +9,30 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
+ARG SSHKEY_ID=secret
+ARG MFILE_ID=secret
 
-COPY url /tmp/url
+# Install gdkit and dependencies
+RUN git clone --depth 1 https://github.com/hpdata/gdkit /usr/local/gdkit && \
+    pip3 install -r /usr/local/gdkit/requirements.txt && \
+    ln -s -f /usr/local/gdkit/gd_get_pub.py /usr/local/bin/gd-get-pub
+
+
 USER $DOCKER_USER
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
 # petsc4m for Octave and MATLAB. Install Atom packages.
 ###############################################################
-RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831ECDC40715C12C%21105&authkey=ACzYNYIvbCFhD48" | \
-    tar xf - -C $DOCKER_HOME && \
+RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
     $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
-    curl -L "$(cat /tmp/url)" | sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
+    gd-get-pub $(sh -c "echo '$MFILE_ID'") | \
+        sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
     \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
@@ -34,7 +41,9 @@ RUN curl -L "https://onedrive.live.com/download?cid=831ECDC40715C12C&resid=831EC
     echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile
+    \
+    rm -f $DOCKER_HOME/.ssh/id_rsa* && \
+    echo "PATH=$DOCKER_HOME/bin:/usr/local/gdkit/bin:$PATH" >> $DOCKER_HOME/.profile
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root
