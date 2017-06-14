@@ -4,54 +4,16 @@ WORKDIR=$DOCKER_HOME/fastsolve
 
 mkdir -p $WORKDIR
 
-# Clone paracoder
-if [ -e "$WORKDIR/paracoder/.git" ]; then
-    echo "ParaCoder was already cloned. Pulling from repository"
+for MODULE in paracoder ilupack4m petsc4m gamg4m matrices; do
+    if [ -e "$WORKDIR/$MODULE/.git" ]; then
+        echo "$MODULE was already cloned. Pulling from repository"
 
-    cd $WORKDIR/paracoder
-    git pull
-else
-    cd $WORKDIR
-    # Remove octave-workspace if it exists
-    rm -f paracoder/octave-workspace
-    git clone --depth 1 git@github.com:fastsolve/paracoder.git
-fi
-
-# Clone ilupack4m
-if [ -e "$WORKDIR/ilupack4m/.git" ]; then
-    echo "ILUPack was already cloned. Pulling from repository"
-
-    cd $WORKDIR/ilupack4m
-    git pull
-else
-    cd $WORKDIR
-    # Remove octave-workspace if it exists
-    rm -f ilupack4m/octave-workspace
-    git clone --depth 1 git@github.com:fastsolve/ilupack4m.git
-fi
-
-# Clone petsc4m
-if [ -e "$WORKDIR/petsc4m/.git" ]; then
-    echo "Petsc4m was already cloned. Pulling from repository"
-
-    cd $WORKDIR/petsc4m
-    git pull
-else
-    cd $WORKDIR
-    # Remove octave-workspace if it exists
-    rm -f ilupack4m/octave-workspace
-    git clone --depth 1 git@github.com:fastsolve/petsc4m.git
-fi
-
-# Clone matrices
-if [ -e "$WORKDIR/matrices/.git" ]; then
-    echo "Matrices was already cloned. Pulling from repository"
-
-    cd $WORKDIR/matrices
-    git pull
-else
-    cd $WORKDIR
-    # Remove octave-workspace if it exists
-    rm -f ilupack4m/octave-workspace
-    git clone --depth 1 git@github.com:fastsolve/matrices.git
-fi
+        cd $WORKDIR/$MODULE
+        git pull
+    else
+        cd $WORKDIR
+        # Remove octave-workspace if it exists
+        rm -f $MODULE/octave-workspace
+        git clone --depth 1 git@github.com:fastsolve/$MODULE.git
+    fi
+done
