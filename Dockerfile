@@ -11,6 +11,7 @@ USER root
 WORKDIR /tmp
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
+ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 
 # Install gdkit and dependencies
