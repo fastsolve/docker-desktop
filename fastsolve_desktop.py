@@ -310,8 +310,6 @@ if __name__ == "__main__":
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
                                  APP + "_config"])
-    if args.volume and args.clear:
-        subprocess.check_output(["docker", "volume", "rm", "-f", args.volume])
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
                "-v", APP + "_config:" + docker_home + "/.config",
@@ -329,17 +327,20 @@ if __name__ == "__main__":
                                  "cp $DOCKER_HOME/.gitconfig_host " +
                                  "$DOCKER_HOME/.config/git/config)"])
 
-    if args.volume:
-        volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
-                    "-w", docker_home + "/" + APP]
-    else:
-        volumes += ["-w", docker_home + "/shared"]
-
     if args.matlab:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
                     "-v", "matlab_config:" + docker_home + "/.matlab"]
 
         download_matlab(args.matlab, user, args.image, volumes)
+
+    if args.volume:
+        if args.clear:
+            subprocess.check_output(["docker", "volume",
+                                     "rm", "-f", args.volume])
+        volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
+                    "-w", docker_home + "/" + APP]
+    else:
+        volumes += ["-w", docker_home + "/shared"]
 
     print("Starting up docker image...")
     if subprocess.check_output(["docker", "--version"]). \
