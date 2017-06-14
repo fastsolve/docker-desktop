@@ -26,7 +26,7 @@ def parse_args(description):
 
     parser.add_argument('-u', "--user",
                         help='The username used by the image. ' +
-                        ' The default is ubuntu.',
+                        'The default is ubuntu.',
                         default="")
 
     parser.add_argument('-i', '--image',
@@ -307,11 +307,6 @@ if __name__ == "__main__":
             decode('utf-8')[:-1]
         user = docker_home[6:]
 
-    # Create .gitconfig if not exist
-    if not os.path.isfile(homedir + "/.gitconfig"):
-        with open(homedir + "/.gitconfig") as f:
-            pass
-
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
                                  APP + "_config"])
@@ -320,9 +315,19 @@ if __name__ == "__main__":
 
     volumes = ["-v", pwd + ":" + docker_home + "/shared",
                "-v", APP + "_config:" + docker_home + "/.config",
-               "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh",
-               "-v", homedir + "/.gitconfig" +
-               ":" + docker_home + "/.gitconfig"]
+               "-v", homedir + "/.ssh" + ":" + docker_home + "/.ssh"]
+
+    # Copy .gitconfig if exists on host and is newer than that in image
+    if os.path.isfile(homedir + "/.gitconfig"):
+        subprocess.check_output(["docker", "run", "--rm", '-t'] + volumes +
+                                ["-v", homedir + "/.gitconfig" +
+                                 ":" + docker_home + "/.gitconfig_host",
+                                 args.image,
+                                 "[[ $DOCKER_HOME/.config/git/config -nt " +
+                                 "$DOCKER_HOME/.gitconfig_host ]] || " +
+                                 "(mkdir -p $DOCKER_HOME/.config/git && " +
+                                 "cp $DOCKER_HOME/.gitconfig_host " +
+                                 "$DOCKER_HOME/.config/git/config)"])
 
     if args.volume:
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
