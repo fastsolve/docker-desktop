@@ -1,0 +1,13 @@
+#!/bin/bash
+
+WORKDIR=$DOCKER_HOME/fastsolve
+
+if [[ -z "$1" || "$1" == "-octave" ]]; then
+  cd $WORKDIR/ilupack4m/makefiles && make TARGET=Octave
+  cd $WORKDIR/paracoder && octave --eval "build_m2c"
+  cd $WORKDIR/petsc4m && octave --eval "build_petsc"
+else
+  cd $WORKDIR/ilupack4m/makefiles && make TARGET=MATLAB
+  cd $WORKDIR/paracoder && octave --eval "build_m2c -matlab"
+  cd $WORKDIR/petsc4m && octave --eval "build_m2c -matlab"
+fi

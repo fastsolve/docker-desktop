@@ -11,12 +11,13 @@ USER root
 WORKDIR /tmp
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
+ADD image/bin $DOCKER_HOME/bin
 
 # Install gdkit and dependencies
 RUN git clone --depth 1 https://github.com/hpdata/gdkit /usr/local/gdkit && \
     pip3 install -r /usr/local/gdkit/requirements.txt && \
-    ln -s -f /usr/local/gdkit/gd_get_pub.py /usr/local/bin/gd-get-pub
-
+    ln -s -f /usr/local/gdkit/gd_get_pub.py /usr/local/bin/gd-get-pub && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
 
 USER $DOCKER_USER
 
@@ -43,6 +44,7 @@ RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
+    echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:/usr/local/gdkit/bin:$PATH" >> $DOCKER_HOME/.profile
 
 WORKDIR $DOCKER_HOME/fastsolve
