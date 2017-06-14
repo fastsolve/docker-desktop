@@ -180,11 +180,9 @@ def download_matlab(version, user, image, volumes):
     if installed.find(b"installed") < 0:
         # Downloading software using Google authentication
         try:
-            port_http = find_free_port(8080, 50)
             print('Authenticating for MATLAB intallation...')
             p = subprocess.Popen(["docker", "run", "--rm", '-ti'] + volumes +
-                                 ['-p', "127.0.0.1:" + str(port_http) +
-                                     ":8080", image, "gd-auth -n"],
+                                 [image, "gd-auth -n"],
                                  stdout=subprocess.PIPE,
                                  universal_newlines=True)
 
