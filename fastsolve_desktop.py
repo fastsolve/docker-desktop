@@ -24,11 +24,6 @@ def parse_args(description):
     # Process command-line arguments
     parser = argparse.ArgumentParser(description=description)
 
-    parser.add_argument('-u', "--user",
-                        help='The username used by the image. ' +
-                        'The default is ubuntu.',
-                        default="")
-
     parser.add_argument('-i', '--image',
                         help='The Docker image to use. ' +
                         'The default is ' + APP + '/desktop.',
@@ -193,7 +188,7 @@ def download_matlab(version, user, image, volumes):
                     # Open browser if found URL
                     print('Log in with your authorized Google account in the ' +
                           'webbrowser to get verification code.')
-                    if args.no_browser:
+                    if not args.no_browser:
                         webbrowser.open(line[ind:-1])
                     else:
                         print('Open browswe at URL:')
@@ -289,23 +284,15 @@ if __name__ == "__main__":
                                             '-q']).find(img) >= 0:
             subprocess.Popen(["docker", "rmi", "-f", img.decode('utf-8')[:-1]])
 
-    # Generate a container ID and find an unused port
-    container = id_generator()
-    port_vnc = str(find_free_port(6080, 50))
-
     # Create directory .ssh if not exist
     if not os.path.exists(homedir + "/.ssh"):
         os.mkdir(homedir + "/.ssh")
 
-    if args.user:
-        user = args.user
-        docker_home = "/home/" + args.user
-    else:
-        docker_home = subprocess.check_output(["docker", "run", "--rm",
-                                               args.image,
-                                               "echo $DOCKER_HOME"]). \
-            decode('utf-8')[:-1]
-        user = docker_home[6:]
+    docker_home = subprocess.check_output(["docker", "run", "--rm",
+                                           args.image,
+                                           "echo $DOCKER_HOME"]). \
+        decode('utf-8')[:-1]
+    user = docker_home[6:]
 
     if args.reset:
         subprocess.check_output(["docker", "volume", "rm", "-f",
@@ -330,13 +317,13 @@ if __name__ == "__main__":
     if args.matlab:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
                     "-v", "matlab_config:" + docker_home + "/.matlab"]
-
         download_matlab(args.matlab, user, args.image, volumes)
 
     if args.volume:
         if args.clear:
             subprocess.check_output(["docker", "volume",
                                      "rm", "-f", args.volume])
+
         volumes += ["-v", args.volume + ":" + docker_home + "/" + APP,
                     "-w", docker_home + "/" + APP]
     else:
@@ -359,6 +346,9 @@ if __name__ == "__main__":
     else:
         size = args.size
 
+    # Generate a container ID
+    container = id_generator()
+
     envs = ["--hostname", container,
             "--env", "RESOLUT=" + size,
             "--env", "HOST_UID=" + uid]
@@ -366,6 +356,7 @@ if __name__ == "__main__":
         envs += ["--env", "MATLAB_VERSION=" + args.matlab]
 
     # Start the docker image in the background and pipe the stderr
+    port_vnc = str(find_free_port(6080, 50))
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_vnc + ":6080"] +
                     envs + volumes +
@@ -403,7 +394,7 @@ if __name__ == "__main__":
 
                         if not args.no_browser:
                             wait_net_service(int(port_vnc))
-                            webbrowser.open(url.strip())
+                            webbrowser.open(url[ind:-1])
 
                         p.stdout.close()
                         p.terminate()
