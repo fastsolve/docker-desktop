@@ -14,11 +14,19 @@ ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 
-# Install gdkit and dependencies
-RUN git clone --depth 1 https://github.com/hpdata/gdkit /usr/local/gdkit && \
+# Install diffmerge and gdkit
+RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
+         /etc/apt/sources.list.d/sourcegear.list && \
+    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | \
+         apt-key add - && \
+    apt-get update && \
+    apt-get install diffmerge && \
+    \
+    git clone --depth 1 https://github.com/hpdata/gdkit /usr/local/gdkit && \
     pip3 install -r /usr/local/gdkit/requirements.txt && \
     ln -s -f /usr/local/gdkit/gd_get_pub.py /usr/local/bin/gd-get-pub && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
 
