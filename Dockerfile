@@ -21,7 +21,7 @@ RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
          /etc/apt/sources.list.d/sourcegear.list && \
     curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
     apt-get update && \
-    apt-get install diffmerge && \
+    apt-get install -y diffmerge && \
     \
     git clone --depth 1 https://github.com/hpdata/gdkit /usr/local/gdkit && \
     pip3 install -r /usr/local/gdkit/requirements.txt && \
