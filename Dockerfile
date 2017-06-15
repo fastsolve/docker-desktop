@@ -14,11 +14,12 @@ ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install diffmerge and gdkit
 RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
          /etc/apt/sources.list.d/sourcegear.list && \
-    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | \
-         apt-key add - && \
+    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
     apt-get update && \
     apt-get install diffmerge && \
     \
