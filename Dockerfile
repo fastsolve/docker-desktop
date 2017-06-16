@@ -79,8 +79,6 @@ ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
 ########################################################
 # Customization for user
 ########################################################
-ADD config/matlab $DOCKER_HOME/.matlab
-
 RUN sed -e 's/autohide=0/autohide=1/g' -i \
         $DOCKER_HOME/.config/lxpanel/LXDE/panels/panel && \
     echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
