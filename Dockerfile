@@ -9,6 +9,9 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
 WORKDIR /tmp
+
+ARG DEBIAN_FRONTEND=noninteractive
+
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
 ADD image/etc /etc
@@ -16,11 +19,18 @@ ADD image/bin $DOCKER_HOME/bin
 ADD config/matlab $DOCKER_HOME/.matlab/R2017a
 ADD config/matlab $DOCKER_HOME/.matlab/R2016b
 
-# Install gdutil and dependencies
-RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
+# Install diffmerge and gdutil
+RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
+         /etc/apt/sources.list.d/sourcegear.list && \
+    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
+    apt-get update && \
+    apt-get install -y diffmerge && \
+    \
+    git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/gd_get_pub.py /usr/local/bin/gd-get-pub && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/bin && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
 
