@@ -56,6 +56,7 @@ RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
+    ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
     echo "@start_matlab" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:/usr/local/gdutil/bin:$PATH" >> $DOCKER_HOME/.profile
 
