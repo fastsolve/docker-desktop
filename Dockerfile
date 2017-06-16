@@ -16,8 +16,7 @@ ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
-ADD config/matlab $DOCKER_HOME/.matlab/R2017a
-ADD config/matlab $DOCKER_HOME/.matlab/R2016b
+ADD image/config $DOCKER_HOME/.config
 
 # Install diffmerge and gdutil
 RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
