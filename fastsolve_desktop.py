@@ -35,9 +35,15 @@ def parse_args(description):
                         default="dev")
 
     parser.add_argument('-m', '--matlab', nargs='?',
+                        metavar='VERSION',
                         help='Specify MATLAB version. Supported versions ' +
                         'include R2016b or R2017a. The default is R2017a.',
                         const="R2017a", default="")
+
+    parser.add_argument('-v', '--volume',
+                        help='A data volume to be mounted at ~/' + APP + '. ' +
+                        'The default is ' + APP + '_src.',
+                        default=APP + "_src")
 
     parser.add_argument('-p', '--pull',
                         help='Pull the latest Docker image. ' +
@@ -51,7 +57,7 @@ def parse_args(description):
                         default=False)
 
     parser.add_argument('-c', '--clear',
-                        help='Clear the source tree by re-cloning it.',
+                        help='Clear the source tree and use the precompiled version in image.',
                         action='store_true',
                         default=False)
 
@@ -61,19 +67,21 @@ def parse_args(description):
                         default=False)
 
     parser.add_argument('-s', '--size',
-                        help='Size of the screen. The default is to obtaion ' +
-                        'the size of the current screen.',
+                        help='Size of the screen. The default is to use ' +
+                        'the current screen size.',
                         default="")
-
-    parser.add_argument('-v', '--volume',
-                        help='A data volume to be mounted to ~/' + APP + '. ' +
-                        'The default is ' + APP + '_src.',
-                        default=APP + "_src")
 
     parser.add_argument('-n', '--no-browser',
                         help='Do not start web browser',
                         action='store_true',
                         default=False)
+
+    parser.add_argument('-a', '--args',
+                        help='All the arguments after -a will be passed to the ' +
+                        '"docker run" command. Useful for specifying ' +
+                        'resources and environment variables.',
+                        nargs=argparse.REMAINDER,
+                        default=[])
 
     args = parser.parse_args()
 
@@ -257,7 +265,7 @@ if __name__ == "__main__":
         uid = str(os.getuid())
         if uid == '0':
             print('You are running as root. This is not safe. ' +
-                  'Please run as a standard user.')
+                  'Please run as a regular user.')
             sys.exit(-1)
     else:
         uid = ""
@@ -315,8 +323,8 @@ if __name__ == "__main__":
                                  "$DOCKER_HOME/.config/git/config)"])
 
     if args.matlab:
-        volumes += ["-v", "matlab_bin:/usr/local/MATLAB/",
-                    "-v", "matlab_config:" + docker_home + "/.matlab"]
+        volumes += ["-v", "matlab_bin:/usr/local/MATLAB/"]
+
         download_matlab(args.matlab, user, args.image, volumes)
 
     if args.volume:
@@ -359,7 +367,7 @@ if __name__ == "__main__":
     port_vnc = str(find_free_port(6080, 50))
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_vnc + ":6080"] +
-                    envs + volumes +
+                    envs + volumes + args.args +
                     [args.image, "startvnc.sh >> " +
                      docker_home + "/.log/vnc.log"])
 
