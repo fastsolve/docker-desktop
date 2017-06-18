@@ -10,49 +10,31 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
+ARG SMARTGIT_VER=17.0.4
 ADD config/atom $DOCKER_HOME/.config/atom
 
-# Install debugging tools and PETSc with Hypre
+# Install atom, smartgit, diffmerge, and PETSc with Hypre
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        ddd \
-        electric-fence \
-        valgrind \
         meld \
         atom \
         clang-format && \
+    \
+    /bin/bash -c 'curl -O http://www.syntevo.com/static/smart/download/smartgit/smartgit-${SMARTGIT_VER//\./_}.deb && \
+        dpkg -i smartgit-${SMARTGIT_VER//\./_}.deb' && \
+    mkdir -p $DOCKER_HOME/.config/smartgit && \
+    ln -s -f $DOCKER_HOME/.config/smartgit $DOCKER_HOME/.smartgit && \
+    \
+    echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
+             /etc/apt/sources.list.d/sourcegear.list && \
+    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
+    apt-get update && \
+    apt-get install -y diffmerge && \
+    \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/.config && \
-    \
-    curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
-    tar zx && \
-    cd petsc-${PETSC_VERSION} && \
-    unset PETSC_DIR && \
-    \
-    ln -s -f /usr/lib/liblapack.a /usr/lib/libopenblas.a . && \
-    ./configure --COPTFLAGS="-g" \
-               --CXXOPTFLAGS="-g" \
-               --FOPTFLAGS="-g" \
-               --with-blas-lib=$PWD/libopenblas.a \
-               --with-lapack-lib=$PWD/liblapack.a \
-               --with-c-support \
-               --with-debugging=1 \
-               --with-shared-libraries \
-               --download-suitesparse \
-               --download-superlu \
-               --download-scalapack \
-               --download-metis \
-               --download-parmetis \
-               --download-ptscotch \
-               --download-hypre \
-               --download-mumps \
-               --download-blacs \
-               --download-spai \
-               --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
-    make all test && \
-    make install && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
