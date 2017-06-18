@@ -62,7 +62,6 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --with-shared-libraries \
                 --download-suitesparse \
                 --download-superlu \
-                --download-superlu_dist \
                 --download-scalapack \
                 --download-metis \
                 --download-parmetis \
