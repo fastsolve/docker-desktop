@@ -42,7 +42,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
                --with-shared-libraries \
                --download-suitesparse \
                --download-superlu \
-               --download-superlu_dist \
                --download-scalapack \
                --download-metis \
                --download-parmetis \
