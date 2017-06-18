@@ -10,8 +10,9 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-# Install debugging tools and
-# build PETSc with debugging from source
+ADD config/atom $DOCKER_HOME/.config/atom
+
+# Install debugging tools
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -22,40 +23,8 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         atom \
         clang-format && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    \
-    curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
-    tar zx && \
-    cd petsc-${PETSC_VERSION} && \
-    unset PETSC_DIR && \
-    ./configure --COPTFLAGS="-g" \
-                --CXXOPTFLAGS="-g" \
-                --FOPTFLAGS="-g" \
-                --with-blas-lib=/usr/lib/libopenblas.a --with-lapack-lib=/usr/lib/liblapack.a \
-                --with-c-support \
-                --with-debugging=1 \
-                --with-shared-libraries \
-                --download-suitesparse \
-                --download-superlu \
-                --download-superlu_dist \
-                --download-scalapack \
-                --download-metis \
-                --download-parmetis \
-                --download-ptscotch \
-                --download-hypre \
-                --download-mumps \
-                --download-blacs \
-                --download-spai \
-                --download-ml \
-                --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
-     make && \
-     make install && \
-     rm -rf /tmp/* /var/tmp/*
-
-ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
-
-ADD config/atom $DOCKER_HOME/.config/atom
-RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/.config
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME/.config && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
 
