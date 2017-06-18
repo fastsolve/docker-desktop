@@ -51,13 +51,12 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
     cd petsc-${PETSC_VERSION} && \
     unset PETSC_DIR && \
     \
-    mkdir -p /tmp/archive && \
-    mv /usr/lib/liblapack.so* /usr/lib/libopenblas.so* /tmp/archive && \
+    ln -s -f /usr/lib/liblapack.a /usr/lib/libopenblas.a . && \
     ./configure --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2" \
                 --FOPTFLAGS="-O2" \
-                --with-blas-lib=/usr/lib/libopenblas.a \
-                --with-lapack-lib=/usr/lib/liblapack.a \
+                --with-blas-lib=$PWD/libopenblas.a \
+                --with-lapack-lib=$PWD/liblapack.a \
                 --with-c-support \
                 --with-debugging=0 \
                 --with-shared-libraries \
@@ -75,7 +74,6 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --prefix=/usr/local/petsc-$PETSC_VERSION && \
      make all test && \
      make install && \
-     mv /tmp/archive/lib*.* /usr/lib && \
      rm -rf /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
