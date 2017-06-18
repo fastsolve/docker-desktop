@@ -23,13 +23,6 @@ RUN apt-get update && \
         wget \
         gdb \
         ccache \
-        \
-        libboost-filesystem-dev \
-        libboost-iostreams-dev \
-        libboost-program-options-dev \
-        libboost-system-dev \
-        libboost-thread-dev \
-        libboost-timer-dev \
         liblapack-dev \
         libmpich-dev \
         libopenblas-dev \
