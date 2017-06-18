@@ -18,14 +18,8 @@ ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 ADD image/config $DOCKER_HOME/.config
 
-# Install diffmerge and gdutil
-RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
-         /etc/apt/sources.list.d/sourcegear.list && \
-    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
-    apt-get update && \
-    apt-get install -y diffmerge && \
-    \
-    git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
+# Install gdutil
+RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/gd_get_pub.py /usr/local/bin/gd-get-pub && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \

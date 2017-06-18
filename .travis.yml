@@ -2,7 +2,7 @@ language: python
 
 services: docker
 
-env: BRANCH=dev
+env: BRANCH=debug
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
@@ -11,12 +11,6 @@ script:
                   --build-arg MFILE_ID=$MFILE_ID . &&
      docker push fastsolve/desktop &&
      touch success'
-# Trigger build of ci-dev branch of numgeom-desktop
-  - '[[ ! -f success ]] ||
-     (git clone -b ci-dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
-      cd numgeom &&
-      git commit --allow-empty -m "Trigger compilation." &&
-      git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&
