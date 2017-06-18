@@ -64,7 +64,7 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                --download-spai && \
     make all test
 
-ENV PETSC_DIR $DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}
+ENV PETSC_DIR $DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}/arch-linux2-c-debug
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
@@ -90,7 +90,7 @@ RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
-    echo "@start_matlab -desktop -Ddebugger ddd -r 'dbmex on'" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    echo "@start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:/usr/local/gdutil/bin:$PATH" >> $DOCKER_HOME/.profile
 
 USER root
