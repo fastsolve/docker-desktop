@@ -17,16 +17,17 @@ ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
 ADD image/config $DOCKER_HOME/.config
+WORKDIR $DOCKER_HOME/fastsolve
 
 # Install gdutil
 RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/gd_get_pub.py /usr/local/bin/gd-get-pub && \
+    mkdir -p $DOCKER/HOME/fastsolve && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
-WORKDIR $DOCKER_HOME/fastsolve
 
 # Install PETSc
 RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
