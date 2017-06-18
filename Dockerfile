@@ -26,6 +26,36 @@ RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
+WORKDIR $DOCKER_HOME/fastsolve
+
+# Install PETSc
+RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
+    tar zx && \
+    cd petsc-${PETSC_VERSION} && \
+    unset PETSC_DIR && \
+    \
+    ln -s -f /usr/lib/liblapack.a /usr/lib/libopenblas.a . && \
+    ./configure --COPTFLAGS="-g" \
+               --CXXOPTFLAGS="-g" \
+               --FOPTFLAGS="-g" \
+               --with-blas-lib=$PWD/libopenblas.a \
+               --with-lapack-lib=$PWD/liblapack.a \
+               --with-c-support \
+               --with-debugging=1 \
+               --with-shared-libraries \
+               --download-suitesparse \
+               --download-superlu \
+               --download-scalapack \
+               --download-metis \
+               --download-parmetis \
+               --download-ptscotch \
+               --download-hypre \
+               --download-mumps \
+               --download-blacs \
+               --download-spai && \
+    make all test
+
+ENV PETSC_DIR $DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
@@ -51,8 +81,7 @@ RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
-    echo "@start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    echo "@start_matlab -desktop -Ddebugger ddd -r 'dbmex on'" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:/usr/local/gdutil/bin:$PATH" >> $DOCKER_HOME/.profile
 
-WORKDIR $DOCKER_HOME/fastsolve
 USER root
