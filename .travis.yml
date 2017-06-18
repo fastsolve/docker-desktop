@@ -1,11 +1,23 @@
+os: linux
+dist: trusty
+sudo: required
 language: python
 services: docker
 
+env:
+  global:
+    - BASE=compdatasci/octave-desktop:latest
+
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - 'docker build --tag fastsolve/desktop:base . &&
-     docker push fastsolve/desktop:base &&
-     touch success'
+  # Build only if the commit range of a push contains Dockerfile or .travis.yml
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
+        -n $(git log --since `docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/$1/g" -p`) &&
+        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
+            grep -e Dockerfile -e .travis.yml)" ]] || [[ "$XVFB" != "1" ]] ||
+     (docker build --tag fastsolve/desktop:base . &&
+      docker push fastsolve/desktop:base &&
+      touch success)'
   # Trigger build of ci-master branch
   - '[[ ! -f success ]] ||
        (git clone -b ci-master https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-master &&
