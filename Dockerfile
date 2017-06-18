@@ -47,11 +47,12 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
     ./configure --COPTFLAGS="-g" \
                --CXXOPTFLAGS="-g" \
                --FOPTFLAGS="-g" \
+               --with-single-library=1 \
                --with-blas-lib=$PWD/libopenblas.a \
                --with-lapack-lib=$PWD/liblapack.a \
                --with-c-support \
                --with-debugging=1 \
-               --with-shared-libraries \
+               --with-shared-libraries=1 \
                --download-suitesparse \
                --download-superlu \
                --download-scalapack \
@@ -64,7 +65,8 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                --download-spai && \
     make all test
 
-ENV PETSC_DIR $DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}/arch-linux2-c-debug
+ENV PETSC_DIR=$DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}
+ENV PETSC_ARCH=arch-linux2-c-debug
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
