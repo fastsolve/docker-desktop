@@ -1,6 +1,9 @@
 #!/bin/bash
 
 HOSTID=$(ifconfig eth0 | grep HWaddr | perl -pe "s/.+HWaddr ([\w:]+)/\$1/g ; s/://g")
+if [[ ! -d /usr/local/MATLAB/$MATLAB_VERSION/sys/java && -d /usr/lib/jvm/java-8-openjdk-amd64/jre ]]; then
+    export MATLAB_JAVA=/usr/lib/jvm/java-8-openjdk-amd64/jre
+fi
 
 [[ -z "$MATLAB_VERSION" ]] || \
     (mkdir -p $HOME/.matlab/$MATLAB_VERSION && \
