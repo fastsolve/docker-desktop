@@ -43,30 +43,30 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
     cd petsc-${PETSC_VERSION} && \
     unset PETSC_DIR && \
     \
-    ln -s -f /usr/lib/liblapack.a /usr/lib/libopenblas.a . && \
+    mkdir -p /tmp/archive && \
+    sudo mv /usr/lib/liblapack*.so /usr/lib/libopenblas*.so /tmp/archive && \
     ./configure --COPTFLAGS="-g" \
-               --CXXOPTFLAGS="-g" \
-               --FOPTFLAGS="-g" \
-               --with-single-library=1 \
-               --with-blas-lib=$PWD/libopenblas.a \
-               --with-lapack-lib=$PWD/liblapack.a \
-               --with-c-support \
-               --with-debugging=1 \
-               --with-shared-libraries=1 \
-               --download-suitesparse \
-               --download-superlu \
-               --download-scalapack \
-               --download-metis \
-               --download-parmetis \
-               --download-ptscotch \
-               --download-hypre \
-               --download-mumps \
-               --download-blacs \
-               --download-spai && \
-    make all test
+                --CXXOPTFLAGS="-g" \
+                --FOPTFLAGS="-g" \
+                --with-blas-lib=/usr/lib/libopenblas.a \
+                --with-lapack-lib=/usr/lib/liblapack.a \
+                --with-c-support \
+                --with-debugging=1 \
+                --with-shared-libraries \
+                --download-suitesparse \
+                --download-scalapack \
+                --download-ptscotch \
+                --download-hypre \
+                --download-mumps \
+                --download-blacs \
+                --download-spai \
+                --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
+     make all test && \
+     sudo make install && \
+     sudo mv /tmp/archive/*.so /usr/lib && \
+     rm -rf /tmp/* /var/tmp/*
 
-ENV PETSC_DIR=$DOCKER_HOME/fastsolve/petsc-${PETSC_VERSION}
-ENV PETSC_ARCH=arch-linux2-c-debug
+ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
