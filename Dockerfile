@@ -26,6 +26,7 @@ RUN echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
     apt-get install -y diffmerge && \
     \
     git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
+    pip2 install -r /usr/local/gdutil/requirements.txt && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/gd_get_pub.py /usr/local/bin/gd-get-pub && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
