@@ -38,6 +38,7 @@ RUN add-apt-repository ppa:webupd8team/atom && \
     rm -rf /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
+ENV  EDITOR=atom
 
 ###############################################################
 # Customize Atom
