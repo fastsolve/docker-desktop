@@ -57,7 +57,6 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --download-scalapack \
                 --download-ptscotch \
                 --download-hypre \
-                --download-ml \
                 --download-mumps \
                 --download-blacs \
                 --download-spai \
