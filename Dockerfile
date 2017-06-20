@@ -47,7 +47,7 @@ ENV MKL_VERSION=2017.2.050 MKL_SHORTVER=174
 ENV MKLROOT=/opt/intel/compilers_and_libraries_2017.2.174/linux/mkl
 ENV LD_LIBRARY_PATH=$MKLROOT/lib/intel64
 
-RUN curl -O http://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
+RUN curl -L -O http://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
     apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2019.PUB && \
     sh -c 'echo deb http://apt.repos.intel.com/mkl all main > /etc/apt/sources.list.d/intel-mkl.list' && \
     apt-get update && \
