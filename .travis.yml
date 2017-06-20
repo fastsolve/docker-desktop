@@ -5,6 +5,9 @@ language: python
 services: docker
 
 env:
+  global:
+  - BRANCH=mkl
+  matrix:
   - XVFB=1
   - XVFB=0
 
@@ -20,11 +23,11 @@ script:
   - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   # Build only if the commit range of a push contains Dockerfile or .travis.yml
-  - 'docker build --tag fastsolve/desktop:mkl . &&
-     docker push fastsolve/desktop:mkl &&
+  - 'docker build --tag fastsolve/desktop:$BRANCH . &&
+     docker push fastsolve/desktop:$BRANCH &&
      touch success'
   # Test scripts
   - git clone https://github.com/fastsolve/docker-desktop master
-  - master/fastsolve_desktop.py -d -n -t mkl && docker stop $(docker ps -q)
-  - master/fastsolve_jupyter.py -d -n -t mkl && docker stop $(docker ps -q)
+  - master/fastsolve_desktop.py -d -n -t $BRANCH && docker stop $(docker ps -q)
+  - master/fastsolve_jupyter.py -d -n -t $BRANCH && docker stop $(docker ps -q)
   - docker images
