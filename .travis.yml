@@ -6,7 +6,7 @@ services: docker
 
 env:
   global:
-  - BRANCH=mkl
+  - BRANCH=$TRAVIS_BRANCH
   matrix:
   - XVFB=1
   - XVFB=0
