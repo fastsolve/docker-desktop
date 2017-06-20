@@ -51,6 +51,7 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --FOPTFLAGS="-g" \
                 --with-blas-lib=/usr/lib/libopenblas.a \
                 --with-lapack-lib=/usr/lib/liblapack.a \
+                --with-log=0 \
                 --with-c-support \
                 --with-debugging=1 \
                 --with-shared-libraries \
@@ -60,7 +61,6 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --download-hypre \
                 --download-mumps \
                 --download-blacs \
-                --download-spai \
                 --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
      make all test && \
      sudo make install && \
