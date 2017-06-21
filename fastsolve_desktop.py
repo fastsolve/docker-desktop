@@ -184,34 +184,43 @@ def download_matlab(version, user, image, volumes):
         # Downloading software using Google authentication
         try:
             print('Authenticating for MATLAB intallation...')
-            p = subprocess.Popen(["docker", "run", "--rm", '-ti'] + volumes +
-                                 [image, "gd-auth -n"],
-                                 stdout=subprocess.PIPE,
-                                 universal_newlines=True)
+            for i in range(3):
+                p = subprocess.Popen(["docker", "run", "--rm", '-i'] + volumes +
+                                     [image, "gd-auth -n"],
+                                     stdin=subprocess.PIPE,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     universal_newlines=True)
 
-            # Monitor the stdout to extract the URL
-            for line in iter(p.stdout.readline, ""):
-                ind = line.find("https://accounts.google.com")
-                if ind >= 0:
-                    # Open browser if found URL
-                    print('Log in with your authorized Google account in the ' +
-                          'webbrowser to get verification code.')
-                    if not args.no_browser:
-                        webbrowser.open(line[ind:-1])
-                    else:
-                        print('Open browswe at URL:')
-                        print(line[ind:-1])
+                # Monitor the stdout to extract the URL
+                for line in iter(p.stdout.readline, ""):
+                    ind = line.find("https://accounts.google.com")
+                    if ind >= 0:
+                        # Open browser if found URL
+                        print('Log in with your authorized Google account in the ' +
+                              'webbrowser to get verification code.')
+                        if not args.no_browser:
+                            webbrowser.open(line[ind:-1])
+                        else:
+                            print('Open browswe at URL:')
+                            print(line[ind:-1])
 
-                    sys.stdout.write('\r\nEnter verification code: ')
-                    sys.stdout.flush()
+                        code = input('Enter verification code: ')
+                        p.stdin.write(code + '\n')
+                        p.communicate()
+                        break
+
+                if p.wait() == 0:
                     break
-
-            if p.wait() != 0:
-                raise BaseException
+                elif i < 2:
+                    sys.stderr.write('Authentication failed. ' +
+                                     'Please try again or press Ctrl-C to stop.\n')
+                else:
+                    raise BaseException
 
             # Downloading MATLAB software
             print("\nDownloading MATLAB...")
-            cmd = "gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 " + version + \
+            cmd = "gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + version + \
                 "_glnx64_nohelp.tgz | sudo tar zxf - -C /usr/local --delay-directory-restore " + \
                 "--warning=no-unknown-keyword --strip-components 2 && " + \
                 "sudo chown -R " + user + ":" + user + \
@@ -220,7 +229,7 @@ def download_matlab(version, user, image, volumes):
                 "(gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 licenses.tgz | " + \
                 "sudo bsdtar zxf - -C /usr/local/MATLAB/" + version + " || true)"
 
-            err = subprocess.call(["docker", "run", "--rm", "-ti"] +
+            err = subprocess.call(["docker", "run", "--rm"] +
                                   volumes + ["-w", "/tmp/", image, cmd])
         except BaseException:
             err = -1
