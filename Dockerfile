@@ -14,7 +14,7 @@ WORKDIR /tmp
 RUN mkdir -p /usr/local/ilupack4m && \
     curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
         bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m/makefiles && make TARGET=Octave && \
+    cd /usr/local/ilupack4m/makefiles && octave --eval "build_milu" && \
     \
     mkdir -p /usr/local/paracoder && \
     curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
@@ -28,9 +28,9 @@ RUN mkdir -p /usr/local/ilupack4m && \
     cd /usr/local/petsc4m && octave --eval "build_petsc -force" && \
     rm -rf `find /usr/local/petsc4m -name lib` && \
     \
-    echo 'addpath /usr/local/ilupack4m/matlab/ilupack' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/petsc4m/.octaverc' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/paracoder/load_m2c.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/ilupack4m/load_milu.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/petsc4m/load_petsc.m' >> $DOCKER_HOME/.octaverc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
