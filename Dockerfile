@@ -52,9 +52,9 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
-    echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/paracoder/load_m2c.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/ilupack4m/load_milu.m" > $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/petsc4m/load_petsc.m" >> $DOCKER_HOME/.octaverc && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
