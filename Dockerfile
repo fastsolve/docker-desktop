@@ -74,14 +74,14 @@ ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
 # petsc4m for Octave and MATLAB. Install Atom packages.
 ###############################################################
-RUN gd-get-pub $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
+RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
     \
     rm -f $DOCKER_HOME/.octaverc && \
     $DOCKER_HOME/bin/pull_fastsolve && \
     $DOCKER_HOME/bin/build_fastsolve && \
     \
-    gd-get-pub $(sh -c "echo '$MFILE_ID'") | \
+    gd-get-pub -o - $(sh -c "echo '$MFILE_ID'") | \
         sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
     MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
     \
