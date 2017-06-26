@@ -14,7 +14,7 @@ WORKDIR /tmp
 RUN mkdir -p /usr/local/ilupack4m && \
     curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
         bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m/makefiles && octave --eval "build_milu" && \
+    cd /usr/local/ilupack4m && octave --eval "build_milu" && \
     \
     mkdir -p /usr/local/paracoder && \
     curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
