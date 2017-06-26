@@ -1,5 +1,5 @@
-# Builds a Docker image with Ubuntu 16.04, Octave, Python3 and Jupyter Notebook
-# for FastSolve
+# Builds a Docker image with Ubuntu 16.04, Octave, Python3 and
+# Jupyter Notebook for FastSolve
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -11,7 +11,12 @@ USER root
 WORKDIR /tmp
 
 # Install ilupack4m, paracoder and petsc4m
-RUN mkdir -p /usr/local/ilupack4m && \
+RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
+    pip2 install -r /usr/local/gdutil/requirements.txt && \
+    pip3 install -r /usr/local/gdutil/requirements.txt && \
+    ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
+    \
+    mkdir -p /usr/local/ilupack4m && \
     curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
         bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
     cd /usr/local/ilupack4m && octave --eval "build_milu" && \
