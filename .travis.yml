@@ -2,11 +2,23 @@ language: python
 
 services: docker
 
-script:
+env:
+  global:
+    - BASE=fastsolve/desktop:base
+
+before_script:
+  - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - 'docker build --tag fastsolve/desktop:dev-env . &&
-     docker push fastsolve/desktop:dev-env &&
-     touch success'
+  - docker pull $BASE
+
+script:
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
+        -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
+        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
+            grep -e Dockerfile -e .travis.yml -e config)" ]] ||
+     (docker build --tag fastsolve/desktop:dev-env . &&
+      docker push fastsolve/desktop:dev-env &&
+      touch success)'
 # Trigger build of ci-dev branch of fastsolve-desktop
   - '[[ ! -f success ]] ||
        (git clone -b ci-dev https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-dev &&
