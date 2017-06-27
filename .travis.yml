@@ -17,7 +17,7 @@ script:
      (docker build --tag fastsolve/desktop:$BRANCH
                    --build-arg SSHKEY_ID=$SSHKEY_ID
                    --build-arg MFILE_ID=$MFILE_ID . &&
-      docker push fastsolve/desktop:$BRAHCN &&
+      docker push fastsolve/desktop:$BRANCH &&
       touch success)'
 # Trigger build of ci-dev branch of numgeom-desktop
   - '[[ ! -f success ]] ||
