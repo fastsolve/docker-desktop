@@ -173,71 +173,83 @@ def get_screen_resolution():
 def download_matlab(version, user, image, volumes):
     """Download MATLAB if not yet installed"""
 
-    installed = subprocess.check_output(["docker", "run", "--rm"] +
-                                        volumes +
-                                        [image,
-                                         'if [ -e "/usr/local/MATLAB/' +
-                                         version + '/installed" ]; ' +
-                                         'then echo "installed"; fi'])
+    try:
+        installed = subprocess.check_output(["docker", "run", "--rm"] +
+                                            volumes +
+                                            [image,
+                                             'if [ -e "/usr/local/MATLAB/' +
+                                             version + '/installed" ]; ' +
+                                             'then echo "installed"; fi'])
+    except subprocess.CalledProcessError:
+        sys.stderr.write(
+            "Please make sure the drive is shared in Docker's settings.\n")
+        sys.exit(-1)
 
     if installed.find(b"installed") < 0:
+        import tempfile
+        import shutil
+        if sys.version_info.major > 2:
+            import urllib.request as urllib
+        else:
+            import urllib
+
+        tmpdir = tempfile.mkdtemp()
+        gd_auth = tmpdir + '/gd_auth.py'
+
+        response = urllib.urlopen(
+            'https://raw.githubusercontent.com/hpdata/gdutil/master/gd_auth.py')
+        with open(gd_auth, 'wb') as f:
+            f.write(response.read())
+
         # Downloading software using Google authentication
         try:
             print('Authenticating for MATLAB intallation...')
-            for i in range(3):
-                p = subprocess.Popen(["docker", "run", "--rm", '-i'] + volumes +
-                                     [image, "gd-auth -n"],
-                                     stdin=subprocess.PIPE,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     universal_newlines=True)
-
-                # Monitor the stdout to extract the URL
-                for line in iter(p.stdout.readline, ""):
-                    ind = line.find("https://accounts.google.com")
-                    if ind >= 0:
-                        # Open browser if found URL
-                        print('Log in with your authorized Google account in the ' +
-                              'webbrowser to get verification code.')
-                        if not args.no_browser:
-                            webbrowser.open(line[ind:-1])
-                        else:
-                            print('Open browswe at URL:')
-                            print(line[ind:-1])
-
-                        code = input('Enter verification code: ')
-                        p.stdin.write(code + '\n')
-                        p.communicate()
-                        break
-
-                if p.wait() == 0:
-                    break
-                elif i < 2:
-                    sys.stderr.write('Authentication failed. ' +
-                                     'Please try again or press Ctrl-C to stop.\n')
-                else:
-                    raise BaseException
+            subprocess.call([sys.executable, gd_auth, '-c', '.'])
 
             # Downloading MATLAB software
             print("\nDownloading MATLAB...")
-            cmd = "gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + version + \
+            cmd = "gd-get -c . -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + version + \
                 "_glnx64_nohelp.tgz | sudo tar zxf - -C /usr/local --delay-directory-restore " + \
                 "--warning=no-unknown-keyword --strip-components 2 && " + \
                 "sudo chown -R " + user + ":" + user + \
                 " /usr/local/MATLAB/" + version + "/licenses && " + \
-                "sudo touch /usr/local/MATLAB/" + version + "/installed && " + \
-                "(gd-get -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 licenses.tgz | " + \
-                "sudo bsdtar zxf - -C /usr/local/MATLAB/" + version + " || true)"
+                "sudo touch /usr/local/MATLAB/" + version + "/installed"
 
             err = subprocess.call(["docker", "run", "--rm"] +
-                                  volumes + ["-w", "/tmp/", image, cmd])
+                                  volumes +
+                                  ["-w", '/home/' + user + '/shared', image, cmd])
+
+            if not err:
+                # Downloading MATLAB documentation in the background
+                cmd = "gd-get -c . -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + \
+                    version + "_glnx64_help.tgz | " + \
+                    "sudo tar zxf - -C /usr/local --delay-directory-restore " + \
+                    "--warning=no-unknown-keyword --strip-components 2"
+
+                if subprocess.check_output(["docker", "--version"]). \
+                        find(b"Docker version 1.") >= 0:
+                    rmflag = "-t"
+                else:
+                    rmflag = "--rm"
+
+                subprocess.call(["docker", "run", rmflag, "-d"] +
+                                volumes +
+                                ["-w", '/home/' + user + '/shared', image, cmd])
         except BaseException:
             err = -1
+        finally:
+            shutil.rmtree(tmpdir)
 
         if err:
             print("Failed to download MATLAB. Please rerun " + sys.argv[0] +
                   " with the -r option and use a valid Google account.")
             sys.exit(err)
+
+    # Suppress warning message about compiler
+    subprocess.call(["docker", "run", "--rm"] + volumes +
+                    [image,
+                     'sudo sed -i "s/need_to_warn == 1/need_to_warn == 2/" ' +
+                     ' /usr/local/MATLAB/' + version + '/bin/mexsh" ]'])
 
 
 def handle_interrupt(container):
