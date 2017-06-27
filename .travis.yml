@@ -2,15 +2,19 @@ language: python
 
 services: docker
 
-env: BRANCH=debug
+env: BRANCH=debug BASE=fastsolve/desktop:dev-env
 
 script:
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - 'docker build --tag fastsolve/desktop:$BRANCH
-                  --build-arg SSHKEY_ID=$SSHKEY_ID
-                  --build-arg MFILE_ID=$MFILE_ID . &&
-     docker push fastsolve/desktop &&
-     touch success'
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
+        -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
+        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
+            grep -e Dockerfile -e .travis.yml -e image)" ]] || [[ "$XVFB" != "1" ]] ||
+     (docker build --tag fastsolve/desktop:$BRANCH
+                   --build-arg SSHKEY_ID=$SSHKEY_ID
+                   --build-arg MFILE_ID=$MFILE_ID . &&
+      docker push fastsolve/desktop:$BRANCH &&
+      touch success)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&
