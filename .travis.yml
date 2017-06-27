@@ -1,6 +1,5 @@
 os: linux
 dist: trusty
-sudo: required
 language: python
 services: docker
 
@@ -18,11 +17,11 @@ before_install:
 
 before_script:
   - '[[ "$XVFB" != "1" ]] || export DISPLAY=:99.0 && sh -e /etc/init.d/xvfb start'
-
-script:
   - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   - docker pull $BASE
+
+script:
   # Build only if the commit range of a push contains Dockerfile or .travis.yml
   # and the base image is older than this commit
   - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
