@@ -4,6 +4,7 @@ services: docker
 
 env:
   global:
+    - BRANCH=dev-env
     - BASE=fastsolve/desktop:base
 
 before_script:
@@ -16,8 +17,8 @@ script:
         -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
             grep -e Dockerfile -e .travis.yml -e config)" ]] ||
-     (docker build --tag fastsolve/desktop:dev-env . &&
-      docker push fastsolve/desktop:dev-env &&
+     (docker build --tag fastsolve/desktop:$BRANCH . &&
+      docker push fastsolve/desktop:$BRANCH &&
       touch success)'
 # Trigger build of ci-dev branch of fastsolve-desktop
   - '[[ ! -f success ]] ||
