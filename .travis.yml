@@ -9,6 +9,7 @@ env:
     - BASE=compdatasci/octave-desktop:latest
 
 before_script:
+  - docker version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
   - docker pull $BASE
 
