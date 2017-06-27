@@ -4,6 +4,10 @@ language: python
 services: docker
 
 env:
+  global:
+    - BRANCH=cuda
+    - BASE=fastsolve/desktop:latest
+  matrix:
   - XVFB=1
   - XVFB=0
 
@@ -14,14 +18,19 @@ before_install:
 
 before_script:
   - '[[ "$XVFB" != "1" ]] || export DISPLAY=:99.0 && sh -e /etc/init.d/xvfb start'
-
-script:
   - docker --version
   - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
+  - docker pull $BASE
+
+script:
   # Build only if the commit range of a push contains Dockerfile or .travis.yml
-  - 'docker build --tag fastsolve/desktop:cuda . &&
-     docker push fastsolve/desktop:cuda &&
-     touch success'
+  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
+        -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
+        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
+            grep -e Dockerfile -e .travis.yml)" ]] || [[ "$XVFB" != "1" ]] ||
+     (docker build --tag fastsolve/desktop:$BRANCH . &&
+      docker push fastsolve/desktop:$BRANCH &&
+      touch success)'
   # Test scripts
   - git clone https://github.com/fastsolve/docker-desktop master
   - master/fastsolve_desktop.py -d -n -t cuda && docker stop $(docker ps -q)
