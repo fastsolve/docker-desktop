@@ -33,9 +33,9 @@ RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     cd /usr/local/petsc4m && octave --eval "build_petsc -force" && \
     rm -rf `find /usr/local/petsc4m -name lib` && \
     \
-    echo 'run /usr/local/paracoder/load_m2c.m' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/ilupack4m/load_milu.m' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/petsc4m/load_petsc.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/paracoder/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/ilupack4m/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/petsc4m/startup.m' >> $DOCKER_HOME/.octaverc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
