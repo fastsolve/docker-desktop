@@ -245,12 +245,6 @@ def download_matlab(version, user, image, volumes):
                   " with the -r option and use a valid Google account.")
             sys.exit(err)
 
-    # Suppress warning message about compiler
-    subprocess.call(["docker", "run", "--rm"] + volumes +
-                    [image,
-                     'sudo sed -i "s/need_to_warn == 1/need_to_warn == 2/" ' +
-                     ' /usr/local/MATLAB/' + version + '/bin/mexsh'])
-
 
 def handle_interrupt(container):
     """Handle keyboard interrupt"""
