@@ -170,82 +170,6 @@ def get_screen_resolution():
         return ""
 
 
-def download_matlab(version, user, image, volumes):
-    """Download MATLAB if not yet installed"""
-
-    try:
-        installed = subprocess.check_output(["docker", "run", "--rm"] +
-                                            volumes +
-                                            [image,
-                                             'if [ -e "/usr/local/MATLAB/' +
-                                             version + '/installed" ]; ' +
-                                             'then echo "installed"; fi'])
-    except subprocess.CalledProcessError:
-        sys.stderr.write(
-            "Please make sure the drive is shared in Docker's settings.\n")
-        sys.exit(-1)
-
-    if installed.find(b"installed") < 0:
-        import tempfile
-        import shutil
-        if sys.version_info.major > 2:
-            import urllib.request as urllib
-        else:
-            import urllib
-
-        tmpdir = tempfile.mkdtemp()
-        gd_auth = tmpdir + '/gd_auth.py'
-
-        response = urllib.urlopen(
-            'https://raw.githubusercontent.com/hpdata/gdutil/master/gd_auth.py')
-        with open(gd_auth, 'wb') as f:
-            f.write(response.read())
-
-        # Downloading software using Google authentication
-        try:
-            print('Authenticating for MATLAB intallation...')
-            subprocess.call([sys.executable, gd_auth, '-c', '.'])
-
-            # Downloading MATLAB software
-            print("\nDownloading MATLAB...")
-            cmd = "gd-get -c . -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + version + \
-                "_glnx64_nohelp.tgz | sudo tar zxf - -C /usr/local --delay-directory-restore " + \
-                "--warning=no-unknown-keyword --strip-components 2 && " + \
-                "sudo chown -R " + user + ":" + user + \
-                " /usr/local/MATLAB/" + version + "/licenses && " + \
-                "sudo touch /usr/local/MATLAB/" + version + "/installed"
-
-            err = subprocess.call(["docker", "run", "--rm"] +
-                                  volumes +
-                                  ["-w", '/home/' + user + '/shared', image, cmd])
-
-            if not err:
-                # Downloading MATLAB documentation in the background
-                cmd = "gd-get -c . -p 0ByTwsK5_Tl_PcFpQRHZHcTM1VW8 -o - " + \
-                    version + "_glnx64_help.tgz | " + \
-                    "sudo tar zxf - -C /usr/local --delay-directory-restore " + \
-                    "--warning=no-unknown-keyword --strip-components 2"
-
-                if subprocess.check_output(["docker", "--version"]). \
-                        find(b"Docker version 1.") >= 0:
-                    rmflag = "-t"
-                else:
-                    rmflag = "--rm"
-
-                subprocess.call(["docker", "run", rmflag, "-d"] +
-                                volumes +
-                                ["-w", '/home/' + user + '/shared', image, cmd])
-        except BaseException:
-            err = -1
-        finally:
-            shutil.rmtree(tmpdir)
-
-        if err:
-            print("Failed to download MATLAB. Please rerun " + sys.argv[0] +
-                  " with the -r option and use a valid Google account.")
-            sys.exit(err)
-
-
 def handle_interrupt(container):
     """Handle keyboard interrupt"""
     try:
@@ -339,8 +263,6 @@ if __name__ == "__main__":
 
     if args.matlab:
         volumes += ["-v", "matlab_bin:/usr/local/MATLAB/"]
-
-        download_matlab(args.matlab, user, args.image, volumes)
 
     if args.volume:
         if args.clear:
