@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Download MATLAB if not yet installed.
+# Author: Xiangmin Jiao <xmjiao@gmail.com>
+
+set -e
+
+GD_FOLDER=0ByTwsK5_Tl_PcFpQRHZHcTM1VW8
+MATLAB_ROOT=/usr/local/MATLAB/$MATLAB_VERSION
+
+if [ ! -f $MATLAB_ROOT/installed ]; then
+    echo 'To download MATLAB, please authenticate using your Stony Brook account:'
+    gd-auth
+
+    if [ -f $HOME/.config/gdutil/mycred.txt ]; then
+        # Downloading MATLAB software
+        echo "Downloading MATLAB..."
+
+        gd-get -p $GD_FOLDER -o - ${MATLAB_VERSION}_glnx64_nohelp.tgz | \
+          sudo tar zxf - -C /usr/local --delay-directory-restore \
+          --warning=no-unknown-keyword --strip-components 2
+
+        echo "Trying to MATLAB licenses..."
+        gd-get -p $GD_FOLDER -o - licenses.tgz | \
+          sudo tar zxf - -C $MATLAB_ROOT || \
+          echo "Not authorized to download licenses. You need to activate MATLAB manually."
+
+        sudo chown -R $USER:$USER $MATLAB_ROOT/licenses
+        sudo touch $MATLAB_ROOT/installed
+        echo "Finished downloadeding MATLAB."
+    fi
+fi

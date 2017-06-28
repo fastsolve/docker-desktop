@@ -1,0 +1,12 @@
+Welcome to the Docker image for the FastSolve development team!
+
+The FastSolve modules are under ~/fastsolve, precompiled for Octave and MATLAB.
+Please save your code and data in ~/shared or ~/fastsolve, or you may lose it
+when the Docker container exits. The ~/shared directory maps to the current
+work directory on the host computer, so you can exchange data through it.
+
+To use git with ssh authentication, make sure the ssh key on your host computer
+is in bitbucket and github, and then run "ssh-add" in this terminal to add your
+ssh key to the ssh-agent.
+
+Happy coding!

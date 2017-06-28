@@ -1,13 +1,24 @@
 #!/bin/bash
 
-HOSTID=$(ifconfig eth0 | grep HWaddr | perl -pe "s/.+HWaddr ([\w:]+)/\$1/g ; s/://g")
-if [[ ! -d /usr/local/MATLAB/$MATLAB_VERSION/sys/java && -d /usr/lib/jvm/java-8-openjdk-amd64/jre ]]; then
-    export MATLAB_JAVA=/usr/lib/jvm/java-8-openjdk-amd64/jre
+if [ -z "$MATLAB_VERSION" ];
+then
+    exit
 fi
 
-[[ -z "$MATLAB_VERSION" ]] || \
-    (mkdir -p $HOME/.matlab/$MATLAB_VERSION && \
-     ln -s -f $HOME/.config/matlab/matlab.prf $HOME/.matlab/$MATLAB_VERSION && \
-     grep -q $HOSTID /usr/local/MATLAB/$MATLAB_VERSION/licenses/* || \
-     /usr/local/MATLAB/$MATLAB_VERSION/bin/activate_matlab.sh) && \
-     /usr/local/MATLAB/$MATLAB_VERSION/bin/matlab $@
+# Download MATLAB
+xterm -e $HOME/bin/download_matlab
+
+# Activate MATLAB
+mkdir -p $HOME/.matlab/$MATLAB_VERSION
+ln -s -f $HOME/.config/matlab/matlab.prf $HOME/.matlab/$MATLAB_VERSION
+
+HOSTID=$(ifconfig eth0 | grep HWaddr | perl -pe "s/.+HWaddr ([\w:]+)/\$1/g ; s/://g")
+
+if [[ -z "$(ls /usr/local/MATLAB/$MATLAB_VERSION/licenses)" || \
+      -z "$(grep -q $HOSTID /usr/local/MATLAB/$MATLAB_VERSION/licenses/*)" ]];
+then
+    /usr/local/MATLAB/$MATLAB_VERSION/bin/activate_matlab.sh
+fi
+
+ # Start MATLAB
+matlab -softwareopengl -desktop
