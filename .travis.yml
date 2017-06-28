@@ -13,7 +13,7 @@ script:
   - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
         -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
-            grep -e Dockerfile -e .travis.yml -e image)" ]] ||
+            grep -e Dockerfile -e .travis.yml -e image -e WELCOME)" ]] ||
      (docker build --tag fastsolve/desktop:$BRANCH
                    --build-arg SSHKEY_ID=$SSHKEY_ID
                    --build-arg MFILE_ID=$MFILE_ID . &&
