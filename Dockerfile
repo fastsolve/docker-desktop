@@ -60,8 +60,8 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
-    echo "@start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "PATH=$DOCKER_HOME/bin:/usr/local/gdutil/bin:$PATH" >> $DOCKER_HOME/.profile
+    echo "@$DOCKER_HOME/bin/start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
+    echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile
 
 WORKDIR $DOCKER_HOME/fastsolve
 USER root
