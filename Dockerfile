@@ -116,9 +116,9 @@ RUN mkdir -p /usr/local/ilupack4m && \
 RUN echo "export OMP_NUM_THREADS=\$(nproc)" >> $DOCKER_HOME/.profile && \
     touch $DOCKER_HOME/.log/jupyter.log && \
     \
-    echo 'addpath /usr/local/ilupack4m/matlab/ilupack' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/paracoder/.octaverc' >> $DOCKER_HOME/.octaverc && \
-    echo 'run /usr/local/petsc4m/.octaverc' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/ilupack4m/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/paracoder/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/petsc4m/startup.m' >> $DOCKER_HOME/.octaverc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 WORKDIR $DOCKER_HOME
