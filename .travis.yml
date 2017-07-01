@@ -26,12 +26,6 @@ script:
        cd ci-dev &&
        git commit --allow-empty -m "Trigger compilation." &&
        git push)'
-# Trigger build of ci-debug branch of fastsolve-desktop
-  - '[[ ! -f success ]] ||
-     (git clone -b ci-debug --depth 1 https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-debug 2> /dev/null &&
-      cd ci-debug &&
-      git commit --allow-empty -m "Trigger compilation." &&
-      git push && cd ..)'
 # Test scripts
   - '[[ ! -f success ]] ||
     (git clone -b master https://github.com/fastsolve/docker-desktop.git master &&
