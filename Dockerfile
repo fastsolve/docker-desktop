@@ -4,7 +4,7 @@
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
 
-FROM fastsolve/desktop:dev-env
+FROM fastsolve/desktop:dev
 LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 
 USER root
@@ -14,26 +14,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
-ADD image/etc /etc
-ADD image/bin $DOCKER_HOME/bin
-ADD image/config $DOCKER_HOME/.config
-WORKDIR $DOCKER_HOME/fastsolve
 
-# Install gdutil
-RUN add-apt-repository ppa:webupd8team/atom && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ddd \
         electric-fence \
         valgrind && \
     apt-get clean && \
     \
-    git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
-    pip2 install -r /usr/local/gdutil/requirements.txt && \
-    pip3 install -r /usr/local/gdutil/requirements.txt && \
-    ln -s -f /usr/local/gdutil/gd_get_pub.py /usr/local/bin/gd-get-pub && \
-    mkdir -p $DOCKER/HOME/fastsolve && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
@@ -88,13 +76,11 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
-    echo "addpath $DOCKER_HOME/fastsolve/ilupack4m/matlab/ilupack" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/paracoder/.octaverc" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/petsc4m/.octaverc" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/paracoder/startup.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/ilupack4m/startup.m" > $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/fastsolve/petsc4m/startup.m" >> $DOCKER_HOME/.octaverc && \
     \
-    rm -f $DOCKER_HOME/.ssh/id_rsa* && \
-    ln -s -f $DOCKER_HOME/.config/matlab $DOCKER_HOME/.matlab && \
-    echo "@start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
-    echo "PATH=$DOCKER_HOME/bin:/usr/local/gdutil/bin:$PATH" >> $DOCKER_HOME/.profile
+    rm -f $DOCKER_HOME/.ssh/id_rsa*
 
+WORKDIR $DOCKER_HOME/fastsolve
 USER root
