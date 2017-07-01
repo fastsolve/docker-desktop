@@ -15,7 +15,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
 ADD image/etc /etc
-ADD image/bin $DOCKER_HOME/bin
 ADD image/home $DOCKER_HOME/
 
 # Install diffmerge and gdutil
