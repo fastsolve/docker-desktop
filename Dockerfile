@@ -16,8 +16,7 @@ ARG SSHKEY_ID=secret
 ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/bin $DOCKER_HOME/bin
-ADD image/config $DOCKER_HOME/.config
-ADD WELCOME $DOCKER_HOME/WELCOME
+ADD image/home $DOCKER_HOME/
 
 # Install diffmerge and gdutil
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
@@ -31,6 +30,8 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     pip2 install -r /usr/local/gdutil/requirements.txt && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
+    echo "move_to_config matlab/R2016b" >> /usr/local/bin/init_vnc && \
+    echo "move_to_config matlab/R2017a" >> /usr/local/bin/init_vnc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
