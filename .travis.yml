@@ -13,12 +13,18 @@ script:
   - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
         -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
         -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE |
-            grep -e Dockerfile -e .travis.yml -e image -e WELCOME)" ]] ||
+            grep -e Dockerfile -e .travis.yml -e image)" ]] ||
      (docker build --tag fastsolve/desktop:$BRANCH
                    --build-arg SSHKEY_ID=$SSHKEY_ID
                    --build-arg MFILE_ID=$MFILE_ID . &&
       docker push fastsolve/desktop:$BRANCH &&
       touch success)'
+# Trigger build of ci-debug branch of fastsolve-desktop
+  - '[[ ! -f success ]] ||
+     (git clone -b ci-debug --depth 1 https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-debug 2> /dev/null &&
+      cd ci-debug &&
+      git commit --allow-empty -m "Trigger compilation." &&
+      git push && cd ..)'
 # Trigger build of ci-dev branch of numgeom-desktop
   - '[[ ! -f success ]] ||
      (git clone -b ci-dev https://$GIT_USER:$GIT_TOKEN@github.com/numgeom/docker-desktop.git numgeom 2> /dev/null &&
