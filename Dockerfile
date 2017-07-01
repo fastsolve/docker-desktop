@@ -11,7 +11,7 @@ USER root
 WORKDIR /tmp
 
 ARG SMARTGIT_VER=17.0.4
-ADD config/atom $DOCKER_HOME/.config/atom
+ADD image/home $DOCKER_HOME/
 
 # Install atom, smartgit, diffmerge, and PETSc with Hypre
 RUN add-apt-repository ppa:webupd8team/atom && \
@@ -35,6 +35,8 @@ RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
+    echo "move_to_config smartgit" >> /usr/local/bin/init_vnc && \
+    echo "move_to_config atom" >> /usr/local/bin/init_vnc && \
     rm -rf /tmp/* /var/tmp/*
 
 USER $DOCKER_USER
@@ -80,7 +82,6 @@ RUN sudo pip3 install -U \
           auto-detect-indentation \
           python-autopep8 \
           clang-format && \
-    ln -s -f $DOCKER_HOME/.config/atom/* $DOCKER_HOME/.atom && \
     rm -rf /tmp/*
 
 WORKDIR $DOCKER_HOME
