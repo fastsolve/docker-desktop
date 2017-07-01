@@ -9,9 +9,6 @@ fi
 xterm -e $HOME/bin/download_matlab
 
 # Activate MATLAB
-mkdir -p $HOME/.matlab/$MATLAB_VERSION
-ln -s -f $HOME/.config/matlab/matlab.prf $HOME/.matlab/$MATLAB_VERSION
-
 HOSTID=$(ifconfig eth0 | grep HWaddr | perl -pe "s/.+HWaddr ([\w:]+).*/\$1/g ; s/://g")
 
 if [[ -z "$(ls /usr/local/MATLAB/$MATLAB_VERSION/licenses)" || \
