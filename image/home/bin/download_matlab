@@ -9,8 +9,11 @@ GD_FOLDER=0ByTwsK5_Tl_PcFpQRHZHcTM1VW8
 MATLAB_ROOT=/usr/local/MATLAB/$MATLAB_VERSION
 
 if [ ! -f $MATLAB_ROOT/installed ]; then
-    echo 'To download MATLAB, please authenticate using your Stony Brook account:'
-    gd-auth
+    if [ ! -f $HOME/.config/gdutil/mycred.txt ]; then
+        echo 'To download MATLAB, please authenticate using an authorized Google account:'
+        read -p "Press enter to continue"
+        gd-auth
+    fi
 
     if [ -f $HOME/.config/gdutil/mycred.txt ]; then
         # Downloading MATLAB software
@@ -27,6 +30,6 @@ if [ ! -f $MATLAB_ROOT/installed ]; then
 
         sudo chown -R $USER:$USER $MATLAB_ROOT/licenses
         sudo touch $MATLAB_ROOT/installed
-        echo "Finished downloadeding MATLAB."
+        echo "Finished installing MATLAB."
     fi
 fi
