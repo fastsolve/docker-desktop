@@ -8,6 +8,22 @@ set -e
 GD_FOLDER=0ByTwsK5_Tl_PcFpQRHZHcTM1VW8
 MATLAB_ROOT=/usr/local/MATLAB/$MATLAB_VERSION
 
+license_expired() {
+  expiration_date=$(egrep -e '[0-9a-z\-]+\s+uncounted' $MATLAB_ROOT/licenses/* | \
+        head -1 | perl -e 's/^.+(\d\d-\w\w\w-\d\d\d\d)\s+uncounted.+/$1/g' -p)
+
+  if [ -n "$expiration_date" -a $(($(date +%s))) -lt $(($(date --date="$expiration_date" +%s))) ]
+  then
+      # License is still valid
+      return 1
+  else
+      # License is has expired
+      echo "MATLAB license has expired"
+      rm -f `grep -l "$expiration_date" $MATLAB_ROOT/licenses/*`
+      return 0
+  fi
+}
+
 if [ ! -f $MATLAB_ROOT/installed ]; then
     if [ ! -f $HOME/.config/gdutil/mycred.txt ]; then
         echo 'To download MATLAB, please authenticate using an authorized Google account:'
@@ -23,13 +39,18 @@ if [ ! -f $MATLAB_ROOT/installed ]; then
           sudo tar zxf - -C /usr/local --delay-directory-restore \
           --warning=no-unknown-keyword --strip-components 2
 
-        echo "Trying to MATLAB licenses..."
-        gd-get -p $GD_FOLDER -o - licenses.tgz | \
-          sudo tar zxf - -C $MATLAB_ROOT || \
-          echo "Not authorized to download licenses. You need to activate MATLAB manually."
-
-        sudo chown -R $USER:$USER $MATLAB_ROOT/licenses
+        sudo chown $USER:$USER $MATLAB_ROOT/licenses
         sudo touch $MATLAB_ROOT/installed
         echo "Finished installing MATLAB."
     fi
+fi
+
+# Download MATLAB licenses
+if license_expired
+then
+  echo "Trying to download MATLAB licenses..."
+  (gd-get -p $GD_FOLDER -o - licenses.tgz | \
+    sudo tar zxf - -C $MATLAB_ROOT &&
+    sudo chown -R $USER:$USER $MATLAB_ROOT/licenses) || \
+    echo "Could not download licenses. You need to activate MATLAB manually."
 fi
