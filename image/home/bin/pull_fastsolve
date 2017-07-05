@@ -14,6 +14,6 @@ for MODULE in paracoder ilupack4m petsc4m gamg4m matrices; do
         cd $WORKDIR
         # Remove octave-workspace if it exists
         rm -f $MODULE/octave-workspace
-        git clone --depth 1 git@github.com:fastsolve/$MODULE.git
+        git clone --depth 10 --no-single-branch git@github.com:fastsolve/$MODULE.git
     fi
 done
