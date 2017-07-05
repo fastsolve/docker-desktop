@@ -17,6 +17,7 @@ ADD image/home $DOCKER_HOME/
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
+        openjdk-8-jre-headless \
         meld \
         atom \
         clang-format && \
