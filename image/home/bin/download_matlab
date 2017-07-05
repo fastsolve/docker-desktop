@@ -24,14 +24,17 @@ license_expired() {
   fi
 }
 
-if [ ! -f $MATLAB_ROOT/installed ]; then
-    if [ ! -f $HOME/.config/gdutil/mycred.txt ]; then
+if [ ! -f $MATLAB_ROOT/installed ]
+then
+    if [[ ! -f $HOME/.config/gdutil/mycred.txt && ! -f ./mycred.txt ]]
+    then
         echo 'To download MATLAB, please authenticate using an authorized Google account:'
         read -p "Press enter to continue"
         gd-auth
     fi
 
-    if [ -f $HOME/.config/gdutil/mycred.txt ]; then
+    if [[ -f $HOME/.config/gdutil/mycred.txt || -f ./mycred.txt ]]
+    then
         # Downloading MATLAB software
         echo "Downloading MATLAB..."
 
@@ -46,7 +49,7 @@ if [ ! -f $MATLAB_ROOT/installed ]; then
 fi
 
 # Download MATLAB licenses
-if license_expired
+if license_expired && [[ -f $HOME/.config/gdutil/mycred.txt || -f ./mycred.txt ]]
 then
   echo "Trying to download MATLAB licenses..."
   (gd-get -p $GD_FOLDER -o - licenses.tgz | \
