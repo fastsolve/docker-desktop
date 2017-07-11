@@ -9,5 +9,5 @@ if [[ -z "$1" || "$1" == "-octave" ]]; then
 else
   cd $WORKDIR/paracoder && octave --eval "build_m2c -matlab"
   cd $WORKDIR/ilupack4m && octave --eval "build_milu -matlab"
-  cd $WORKDIR/petsc4m && octave --eval "build_m2c -matlab"
+  cd $WORKDIR/petsc4m && octave --eval "build_petsc -matlab"
 fi
