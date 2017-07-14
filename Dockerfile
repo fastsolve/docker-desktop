@@ -16,16 +16,16 @@ RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
     \
-    mkdir -p /usr/local/ilupack4m && \
-    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m && octave --eval "build_milu" && \
-    \
     mkdir -p /usr/local/paracoder && \
     curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
         bsdtar zxf - --strip-components 1 -C /usr/local/paracoder && \
     cd /usr/local/paracoder && octave --eval "build_m2c -force" && \
     rm -rf `find /usr/local/paracoder -name lib` && \
+    \
+    mkdir -p /usr/local/ilupack4m && \
+    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
+        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
+    cd /usr/local/ilupack4m && octave --eval "build_milu" && \
     \
     mkdir -p /usr/local/petsc4m && \
     curl -s  -L https://github.com/fastsolve/petsc4m/archive/master.tar.gz | \
