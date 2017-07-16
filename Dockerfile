@@ -13,13 +13,17 @@ WORKDIR /tmp
 ARG SMARTGIT_VER=17.0.4
 ADD image/home $DOCKER_HOME/
 
-# Install atom, smartgit, diffmerge, and PETSc with Hypre
+# Install atom, sublime-text, smartgit, diffmerge, and PETSc with Hypre
 RUN add-apt-repository ppa:webupd8team/atom && \
+    curl -q https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - && \
+    echo "deb https://download.sublimetext.com/ apt/stable/" | \
+        tee /etc/apt/sources.list.d/sublime-text.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         openjdk-8-jre-headless \
         meld \
         atom \
+        sublime-text \
         clang-format && \
     \
     /bin/bash -c 'curl -O http://www.syntevo.com/static/smart/download/smartgit/smartgit-${SMARTGIT_VER//\./_}.deb && \
