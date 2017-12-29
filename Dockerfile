@@ -22,7 +22,7 @@ RUN apt-get update && \
         wget \
         gdb \
         ccache \
-        openmpi \
+        openmpi-bin \
         liblapack-dev \
         libopenmpi-dev \
         libopenblas-dev && \
