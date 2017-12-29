@@ -10,26 +10,16 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-ARG SMARTGIT_VER=17.0.4
 ADD image/home $DOCKER_HOME/
 
-# Install atom, sublime-text, smartgit, diffmerge, and PETSc with Hypre
+# Install atom, diffmerge, and PETSc with Hypre
 RUN add-apt-repository ppa:webupd8team/atom && \
-    curl -q https://download.sublimetext.com/sublimehq-pub.gpg | apt-key add - && \
-    echo "deb https://download.sublimetext.com/ apt/stable/" | \
-        tee /etc/apt/sources.list.d/sublime-text.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         openjdk-8-jre-headless \
         meld \
         atom \
-        sublime-text \
         clang-format && \
-    \
-    /bin/bash -c 'curl -O http://www.syntevo.com/static/smart/download/smartgit/smartgit-${SMARTGIT_VER//\./_}.deb && \
-        dpkg -i smartgit-${SMARTGIT_VER//\./_}.deb' && \
-    mkdir -p $DOCKER_HOME/.config/smartgit && \
-    ln -s -f $DOCKER_HOME/.config/smartgit $DOCKER_HOME/.smartgit && \
     \
     echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
              /etc/apt/sources.list.d/sourcegear.list && \
@@ -40,7 +30,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
-    echo "move_to_config smartgit" >> /usr/local/bin/init_vnc && \
     echo "move_to_config atom" >> /usr/local/bin/init_vnc && \
     rm -rf /tmp/* /var/tmp/*
 
