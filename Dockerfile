@@ -39,6 +39,10 @@ RUN sudo pip3 install -U \
          PyQt5 \
          spyder && \
     \
+    sudo mkdir -p /usr/local/mlint && \
+    curl -L 'https://www.dropbox.com/s/26olcu9v5l5rlse/R2017a_glnxa64_mlint.tgz?dl=0' | \
+        sudo bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
+    sudo ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
     apm install \
           language-cpp14 \
           language-matlab \
@@ -58,6 +62,7 @@ RUN sudo pip3 install -U \
           linter-gcc \
           linter-gfortran \
           linter-flake8 \
+          linter-matlab \
           dbg \
           output-panel \
           dbg-gdb \
