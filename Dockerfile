@@ -1,5 +1,5 @@
 # Builds a Docker image for FastSolve development environment
-# with Ubuntu 16.04, Octave, Python3, Jupyter Notebook and Atom
+# with Ubuntu 17.10, Octave, Python3, Jupyter Notebook and Atom
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -12,7 +12,7 @@ WORKDIR /tmp
 
 ADD image/home $DOCKER_HOME/
 
-# Install atom, diffmerge, and PETSc with Hypre
+# Install atom and PETSc with Hypre
 RUN add-apt-repository ppa:webupd8team/atom && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -20,12 +20,6 @@ RUN add-apt-repository ppa:webupd8team/atom && \
         meld \
         atom \
         clang-format && \
-    \
-    echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
-             /etc/apt/sources.list.d/sourcegear.list && \
-    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
-    apt-get update && \
-    apt-get install -y diffmerge && \
     \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
