@@ -17,13 +17,8 @@ ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/home $DOCKER_HOME/
 
-# Install diffmerge and gdutil
+# Install gdutil
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
-    echo "deb http://debian.sourcegear.com/ubuntu precise main" > \
-         /etc/apt/sources.list.d/sourcegear.list && \
-    curl -L http://debian.sourcegear.com/SOURCEGEAR-GPG-KEY | apt-key add - && \
-    apt-get update && \
-    apt-get install -y diffmerge && \
     \
     git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
     pip2 install -r /usr/local/gdutil/requirements.txt && \
