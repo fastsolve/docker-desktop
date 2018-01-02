@@ -65,6 +65,7 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
      rm -rf /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
+ENV LD_LIBRARY_PATH=$PETSC_DIR/lib
 
 ########################################################
 # Customization for user
