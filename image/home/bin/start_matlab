@@ -9,7 +9,7 @@ fi
 xterm -e $HOME/bin/download_matlab
 
 # Activate MATLAB
-HOSTID=$(ifconfig eth0 | grep HWaddr | perl -pe "s/.+HWaddr ([\w:]+).*/\$1/g ; s/://g")
+HOSTID=$(ifconfig eth0 | grep -e "[0-f]:[0-f]" | perl -pe "s/\s+\w+\s+([0-f:]+).*/\$1/g ; s/://g")
 
 if [[ -z "$(ls /usr/local/MATLAB/$MATLAB_VERSION/licenses)" || \
       -z "$(grep $HOSTID /usr/local/MATLAB/$MATLAB_VERSION/licenses/*)" ]];
@@ -17,5 +17,5 @@ then
     /usr/local/MATLAB/$MATLAB_VERSION/bin/activate_matlab.sh
 fi
 
- # Start MATLAB
-matlab -softwareopengl -desktop
+# Start MATLAB
+/usr/local/MATLAB/$MATLAB_VERSION/bin/matlab -softwareopengl -desktop
