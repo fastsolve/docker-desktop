@@ -1,40 +1,10 @@
 os: linux
-dist: trusty
 language: python
 services: docker
 
-env:
-  global:
-    - BASE=compdatasci/octave-desktop:latest
-
 before_script:
-  - docker version
-  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_USERPASS"
-  - docker pull $BASE
+  - git clone --depth=1 https://$GIT_TOKEN@github.com/xmjiao/ci-util.git 2> /dev/null
 
 script:
-  # Build only if the commit range of a push contains Dockerfile or .travis.yml
-  - '[[ "$TRAVIS_EVENT_TYPE" == "push" && -n "$TRAVIS_COMMIT_RANGE" &&
-        -n $(git log --since $(docker inspect $BASE | grep Created | perl -e "s/.+\"([\d-:T]+).+$/\$1/g" -p)) &&
-        -z "$(git diff --name-only $TRAVIS_COMMIT_RANGE | grep -e Dockerfile -e .travis.yml)" ]] ||
-     (docker build --tag fastsolve/desktop:base . &&
-      docker push fastsolve/desktop:base &&
-      touch success)'
-  # Trigger build of ci-master branch
-  - '[[ ! -f success ]] ||
-       (git clone -b ci-master https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-master &&
-       cd ci-master &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push)'
-  # Trigger build of ci-dev-env branch
-  - '[[ ! -f success ]] ||
-       (git clone -b ci-dev-env https://$GIT_USER:$GIT_TOKEN@github.com/fastsolve/docker-desktop.git ci-dev-env &&
-       cd ci-dev-env &&
-       git commit --allow-empty -m "Trigger compilation." &&
-       git push)'
-  # Test scripts
-  - '[[ ! -f success ]] ||
-    (git clone -b master https://github.com/fastsolve/docker-desktop.git master 2> /dev/null &&
-     master/fastsolve_desktop.py -d -n -t base && docker stop $(docker ps -q) &&
-     master/fastsolve_jupyter.py -d -n -t base && docker stop $(docker ps -q))'
-  - docker images
+  - './ci-util/build-docker.sh &&
+    ./ci-util/trigger-via-api.sh'
