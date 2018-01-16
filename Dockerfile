@@ -65,6 +65,7 @@ ENV PETSC_VERSION=3.7.6
 
 RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
     tar zx && \
+    unset PETSC_DIR && \
     cd petsc-${PETSC_VERSION} && \
     ./configure --COPTFLAGS="-O2" \
                 --CXXOPTFLAGS="-O2" \
