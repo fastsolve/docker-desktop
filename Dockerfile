@@ -22,6 +22,7 @@ RUN apt-get update && \
         wget \
         gdb \
         ccache \
+        libhdf5-dev \
         openmpi-bin \
         liblapack-dev \
         libopenmpi-dev \
