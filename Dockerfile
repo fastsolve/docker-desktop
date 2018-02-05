@@ -13,6 +13,7 @@ WORKDIR /tmp
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         cmake \
+        zip unzip \
         bison \
         flex \
         git \
