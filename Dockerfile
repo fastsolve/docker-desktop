@@ -21,6 +21,7 @@ RUN apt-get update && \
         bsdtar \
         rsync \
         wget \
+        unzip \
         gdb \
         ccache \
         \
