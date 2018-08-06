@@ -63,7 +63,7 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --download-blacs \
                 --download-spai \
                 --prefix=/usr/local/petsc-$PETSC_VERSION && \
-     make all test && \
+     make all && \
      make install && \
      rm -rf /tmp/* /var/tmp/*
 
