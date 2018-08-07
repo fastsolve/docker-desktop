@@ -95,10 +95,10 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION
 
 # Install ilupack4m, paracoder and petsc4m
-RUN mkdir -p /usr/local/ilupack4m && \
-    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
-        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
-    cd /usr/local/ilupack4m/makefiles && make TARGET=Octave && \
+RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
+    pip2 install -r /usr/local/gdutil/requirements.txt && \
+    pip3 install -r /usr/local/gdutil/requirements.txt && \
+    ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
     \
     mkdir -p /usr/local/paracoder && \
     curl -s  -L https://github.com/fastsolve/paracoder/archive/master.tar.gz | \
@@ -106,11 +106,22 @@ RUN mkdir -p /usr/local/ilupack4m && \
     cd /usr/local/paracoder && octave --eval "build_m2c -force" && \
     rm -rf `find /usr/local/paracoder -name lib` && \
     \
+    mkdir -p /usr/local/ilupack4m && \
+    curl -s  -L https://github.com/fastsolve/ilupack4m/archive/master.tar.gz | \
+        bsdtar zxf - --strip-components 1 -C /usr/local/ilupack4m && \
+    cd /usr/local/ilupack4m && octave --eval "build_milu" && \
+    \
     mkdir -p /usr/local/petsc4m && \
     curl -s  -L https://github.com/fastsolve/petsc4m/archive/master.tar.gz | \
         bsdtar zxf - --strip-components 1 -C /usr/local/petsc4m && \
     cd /usr/local/petsc4m && octave --eval "build_petsc -force" && \
-    rm -rf `find /usr/local/petsc4m -name lib`
+    rm -rf `find /usr/local/petsc4m -name lib` && \
+    \
+    echo 'run /usr/local/paracoder/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/ilupack4m/startup.m' >> $DOCKER_HOME/.octaverc && \
+    echo 'run /usr/local/petsc4m/startup.m' >> $DOCKER_HOME/.octaverc && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
+
 
 ########################################################
 # Customization for user
