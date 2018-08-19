@@ -22,6 +22,7 @@ RUN apt-get update && \
         rsync \
         wget \
         gdb \
+        ddd \
         ccache \
         libhdf5-dev \
         libcgns-dev \
