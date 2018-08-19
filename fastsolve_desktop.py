@@ -305,7 +305,7 @@ if __name__ == "__main__":
                      "-p", "127.0.0.1:" + port_http + ":6080",
                      "-p", "127.0.0.1:" + port_vnc + ":5900"] +
                     envs + volumes + args.args +
-                    ['--security-opt', 'seccomp=unconfined',
+                    ['--security-opt', 'seccomp=unconfined', '--cap-add=SYS_PTRACE',
                      args.image, "startvnc.sh >> " +
                      docker_home + "/.log/vnc.log"])
 

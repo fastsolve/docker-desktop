@@ -243,7 +243,8 @@ if __name__ == "__main__":
     subprocess.call(["docker", "run", "-d", rmflag, "--name", container,
                      "-p", "127.0.0.1:" + port_http + ":" + port_http] +
                     envs + volumes + args.args +
-                    [args.image,
+                    ['--security-opt', 'seccomp=unconfined', '--cap-add=SYS_PTRACE',
+                     args.image,
                      "jupyter-notebook --no-browser --ip=0.0.0.0 --port " +
                      port_http +
                      " >> " + docker_home + "/.log/jupyter.log 2>&1"])
