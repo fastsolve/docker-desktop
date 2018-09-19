@@ -24,6 +24,7 @@ RUN apt-get update && \
         gdb \
         ddd \
         ccache \
+        libgfortran3 \
         libhdf5-dev \
         libcgns-dev \
         openmpi-bin \
