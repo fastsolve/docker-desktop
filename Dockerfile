@@ -49,7 +49,6 @@ RUN sudo pip3 install -U \
           language-fortran \
           language-docker \
           autocomplete-python \
-          autocomplete-fortran \
           git-plus \
           merge-conflicts \
           split-diff \
