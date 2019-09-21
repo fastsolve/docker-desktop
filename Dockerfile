@@ -1,5 +1,5 @@
 # Builds a Docker image for FastSolve development environment
-# with Ubuntu 17.10, Octave, Python3, Jupyter Notebook and Atom
+# with Ubuntu, Octave, Python3, Jupyter Notebook and VSCode.
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -12,64 +12,90 @@ WORKDIR /tmp
 
 ADD image/home $DOCKER_HOME/
 
-# Install atom and PETSc with Hypre
-RUN add-apt-repository ppa:webupd8team/atom && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        openjdk-8-jre-headless \
-        meld \
-        atom \
-        clang-format && \
+# Install vscode and system packages
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+    mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg && \
+    sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' && \
     \
+    apt-get update && \
+    apt-get install  -y --no-install-recommends \
+        vim \
+        build-essential \
+        pkg-config \
+        gfortran \
+        cmake \
+        bison \
+        flex \
+        git \
+        bash-completion \
+        bsdtar \
+        rsync \
+        wget \
+        ccache \
+        \
+        clang \
+        clang-format \
+        libboost-all-dev \
+        code \
+        enchant && \
+    apt-get install -y --no-install-recommends \
+        python3-pip \
+        python3-dev \
+        python3-wheel \
+        pandoc \
+        ttf-dejavu && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
-    echo "move_to_config atom" >> /usr/local/bin/init_vnc && \
-    rm -rf /tmp/* /var/tmp/*
+    pip3 install -U \
+        setuptools && \
+    pip3 install -U \
+        autopep8 \
+        flake8 \
+        yapf \
+        black \
+        pyenchant \
+        pylint \
+        pytest \
+        Cython \
+        Sphinx \
+        sphinx_rtd_theme && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 USER $DOCKER_USER
-ENV  GIT_EDITOR=vi EDITOR=atom
-
-###############################################################
-# Customize Atom
-###############################################################
-RUN sudo pip3 install -U \
-         autopep8 \
-         flake8 \
-         PyQt5 \
-         spyder && \
-    \
-    sudo mkdir -p /usr/local/mlint && \
-    curl -L 'https://www.dropbox.com/s/26olcu9v5l5rlse/R2017a_glnxa64_mlint.tgz?dl=0' | \
-        sudo bsdtar zxf - -C /usr/local/mlint --strip-components 4 && \
-    sudo ln -s -f /usr/local/mlint/bin/glnxa64/mlint /usr/local/bin && \
-    apm install \
-          language-cpp14 \
-          language-matlab \
-          language-fortran \
-          language-docker \
-          autocomplete-python \
-          git-plus \
-          merge-conflicts \
-          split-diff \
-          gcc-make-run \
-          platformio-ide-terminal \
-          intentions \
-          busy-signal \
-          linter-ui-default \
-          linter \
-          linter-gcc \
-          linter-gfortran \
-          linter-flake8 \
-          linter-matlab \
-          dbg \
-          output-panel \
-          dbg-gdb \
-          python-debugger \
-          auto-detect-indentation \
-          python-autopep8 \
-          clang-format && \
-    rm -rf /tmp/*
-
+ENV  GIT_EDITOR=vi EDITOR=code
 WORKDIR $DOCKER_HOME
+
+# Install vscode extensions
+RUN mkdir -p $DOCKER_HOME/.vscode && \
+    mv $DOCKER_HOME/.vscode $DOCKER_HOME/.config/vscode && \
+    ln -s -f $DOCKER_HOME/.config/vscode $DOCKER_HOME/.vscode && \
+    git clone https://github.com/VundleVim/Vundle.vim.git \
+        $DOCKER_HOME/.vim/bundle/Vundle.vim && \
+    vim -c "PluginInstall" -c "quitall" && \
+    python3 $DOCKER_HOME/.vim/bundle/YouCompleteMe/install.py \
+        --clang-completer --system-boost && \
+    bash -c 'for ext in \
+        ms-vscode.cpptools \
+        jbenden.c-cpp-flylint \
+        cschlosser.doxdocgen \
+        bbenoist.doxygen \
+        streetsidesoftware.code-spell-checker \
+        eamodio.gitlens \
+        james-yu.latex-workshop \
+        yzhang.markdown-all-in-one \
+        davidanson.vscode-markdownlint \
+        gimly81.matlab \
+        krvajalm.linter-gfortran \
+        ms-python.python \
+        guyskk.language-cython \
+        vector-of-bool.cmake-tools \
+        twxs.cmake \
+        shardulm94.trailing-spaces \
+        ms-azuretools.vscode-docker \
+        formulahendry.code-runner \
+        formulahendry.terminal; \
+        do \
+            code --install-extension $ext; \
+        done'
+
 USER root
