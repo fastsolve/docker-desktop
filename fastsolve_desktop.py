@@ -17,10 +17,10 @@ import os
 
 owner = "fastsolve"
 proj = os.path.basename(sys.argv[0]).split("_")[0]
-image = owner + "/docker-desktop"
+image = owner + "/desktop"
 tag = "dev"
 projdir = "project"
-workdir = "shared"
+workdir = "project"
 volume = proj + "_project"
 
 
