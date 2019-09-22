@@ -69,28 +69,10 @@ For additional command-line options, use the command
 python fastsolve_desktop.py -h
 ```
 
-### Running the Docker Image as Jupyter-Notebook Server
-Besides using the Docker Image as an X-Windows desktop environment, you can also use it as a Jupyter-Notebook server with the
-default web browser on your computer. Simply replace `fastsolve_desktop.py` with `fastsolve_jupyter.py` in the preceding commands. That is, on Windows run the commands
-```
-curl https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve_jupyter.py -outfile fastsolve_jupyter.py
-python fastsolve_jupyter.py -p
-```
-or on Linux and Mac run the commands
-```
-curl -s -O https://raw.githubusercontent.com/fastsolve/docker-desktop/master/fastsolve_jupyter.py
-python fastsolve_jupyter.py -p
-```
-in the directory where your Jupyter notebooks are stored.
-
 ### Running the Docker Image Offline
 After you have download the Docker image using the `curl` and `python` commands above, you can run the image offline without internet connection using the following command:
 ```
 python fastsolve_desktop.py
-```
-or
-```
-python fastsolve_jupyter.py
 ```
 in the directory where you ran the `curl` command above.
 
