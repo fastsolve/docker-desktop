@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKDIR=$DOCKER_HOME/fastsolve
+WORKDIR=$DOCKER_HOME/projects/fastsolve
 
 if [[ -z "$1" || "$1" == "-octave" ]]; then
   cd $WORKDIR/paracoder && octave --eval "build_m2c"

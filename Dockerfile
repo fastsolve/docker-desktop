@@ -1,5 +1,5 @@
 # Builds a Docker image for FastSolve development environment
-# with Ubuntu 16.04, Octave, Python3, Jupyter Notebook and Atom
+# with Ubuntu, Octave, Python3, Jupyter Notebook and Atom
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -49,13 +49,13 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
-    echo "run $DOCKER_HOME/fastsolve/paracoder/startup.m" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/ilupack4m/startup.m" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/fastsolve/petsc4m/startup.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/projects/fastsolve/paracoder/startup.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/projects/fastsolve/ilupack4m/startup.m" > $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/projects/fastsolve/petsc4m/startup.m" >> $DOCKER_HOME/.octaverc && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     echo "@$DOCKER_HOME/bin/start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile
 
-WORKDIR $DOCKER_HOME/fastsolve
+WORKDIR $DOCKER_HOME/projects
 USER root

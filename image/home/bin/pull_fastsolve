@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORKDIR=$DOCKER_HOME/fastsolve
+WORKDIR=$DOCKER_HOME/projects/fastsolve
 
 mkdir -p $WORKDIR
 
