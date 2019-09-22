@@ -49,13 +49,13 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
     \
-    echo "run $DOCKER_HOME/projects/fastsolve/paracoder/startup.m" >> $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/projects/fastsolve/ilupack4m/startup.m" > $DOCKER_HOME/.octaverc && \
-    echo "run $DOCKER_HOME/projects/fastsolve/petsc4m/startup.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/project/fastsolve/paracoder/startup.m" >> $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/project/fastsolve/ilupack4m/startup.m" > $DOCKER_HOME/.octaverc && \
+    echo "run $DOCKER_HOME/project/fastsolve/petsc4m/startup.m" >> $DOCKER_HOME/.octaverc && \
     \
     rm -f $DOCKER_HOME/.ssh/id_rsa* && \
     echo "@$DOCKER_HOME/bin/start_matlab -desktop" >> $DOCKER_HOME/.config/lxsession/LXDE/autostart && \
     echo "PATH=$DOCKER_HOME/bin:$PATH" >> $DOCKER_HOME/.profile
 
-WORKDIR $DOCKER_HOME/projects
+WORKDIR $DOCKER_HOME/project
 USER root

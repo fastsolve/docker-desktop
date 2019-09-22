@@ -1,8 +1,8 @@
 Welcome to the Docker image for the FastSolve development team!
 
-The FastSolve modules are under ~/projects/fastsolve, precompiled for Octave 
-and MATLAB. Please save your code and data in ~/shared or ~/projects, or you 
-would lose them when the Docker container exits. The ~/shared directory maps 
+The FastSolve modules are under ~/projects/fastsolve, precompiled for Octave
+and MATLAB. Please save your code and data in ~/shared or ~/projects, or you
+would lose them when the Docker container exits. The ~/shared directory maps
 to the current work directory on your host computer, so you can exchange data
 through it.
 
