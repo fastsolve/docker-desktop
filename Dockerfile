@@ -62,7 +62,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME
 
 USER $DOCKER_USER
-ENV  GIT_EDITOR=vi EDITOR=code
+ENV  GIT_EDITOR=nano EDITOR=code
 WORKDIR $DOCKER_HOME
 
 # Install vscode extensions
@@ -77,6 +77,7 @@ RUN mkdir -p $DOCKER_HOME/.vscode && \
     bash -c 'for ext in \
         ms-vscode.cpptools \
         jbenden.c-cpp-flylint \
+        foxundermoon.shell-format \
         cschlosser.doxdocgen \
         bbenoist.doxygen \
         streetsidesoftware.code-spell-checker \
