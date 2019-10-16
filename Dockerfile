@@ -42,7 +42,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         python3-pip \
         python3-dev \
         python3-wheel \
-        qt5dxcb-plugin \
         swig3.0 \
         pandoc \
         ttf-dejavu && \
