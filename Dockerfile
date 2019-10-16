@@ -42,18 +42,29 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         python3-pip \
         python3-dev \
         python3-wheel \
+        qt5dxcb-plugin \
+        swig3.0 \
         pandoc \
         ttf-dejavu && \
     apt-get clean && \
     pip3 install -U \
         setuptools && \
     pip3 install -U \
+        numpy \
+        scipy \
+        sympy \
+        matplotlib \
+        pandas \
+        numba \
+        numpydoc \
         autopep8 \
         flake8 \
         yapf \
         black \
         pyenchant \
+        mpi4py \
         pylint \
+        cpplint \
         pytest \
         Cython \
         Sphinx \
@@ -94,6 +105,7 @@ RUN mkdir -p $DOCKER_HOME/.vscode && \
         shardulm94.trailing-spaces \
         ms-azuretools.vscode-docker \
         formulahendry.code-runner \
+        mine.cpplint \
         formulahendry.terminal; \
         do \
             code --install-extension $ext; \
