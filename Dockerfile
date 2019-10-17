@@ -19,6 +19,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
     \
     apt-get update && \
     apt-get install  -y --no-install-recommends \
+        nano \
         vim \
         build-essential \
         pkg-config \
@@ -36,6 +37,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         clang \
         clang-format \
         libboost-all-dev \
+        qt5dxcb-plugin \
         code \
         enchant && \
     apt-get install -y --no-install-recommends \
@@ -52,6 +54,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         numpy \
         scipy \
         sympy \
+        PyQt5 \
         matplotlib \
         pandas \
         numba \
