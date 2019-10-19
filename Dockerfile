@@ -39,6 +39,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         libboost-all-dev \
         qt5dxcb-plugin \
         code \
+        diffuse \
         enchant && \
     apt-get install -y --no-install-recommends \
         python3-pip \
