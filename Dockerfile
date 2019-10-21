@@ -11,7 +11,6 @@ USER root
 WORKDIR /tmp
 
 ENV UBUNTU_VERSION=1804
-# ENV CUDA_PKG_VERSION=10-1=10.1.105-1
 ENV CUDA_PKG_VERSION=10-1
 
 # Install CUDA runtime by following steps oulined here:
