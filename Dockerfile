@@ -34,7 +34,7 @@ RUN apt-get update && \
         cuda-cusparse-$CUDA_PKG_VERSION \
         cuda-npp-$CUDA_PKG_VERSION \
         cuda-cudart-$CUDA_PKG_VERSION \
-        cuda-core-$CUDA_PKG_VERSION \
+        cuda-compiler-$CUDA_PKG_VERSION \
         cuda-misc-headers-$CUDA_PKG_VERSION \
         cuda-command-line-tools-$CUDA_PKG_VERSION \
         cuda-nvrtc-dev-$CUDA_PKG_VERSION \
