@@ -1,4 +1,4 @@
-# Builds a Docker image with Ubuntu 16.04, Octave, Python3 and Jupyter Notebook
+# Builds a Docker image with Ubuntu 18.04, Octave, Python3 and Jupyter Notebook
 # for FastSolve
 #
 # Authors:
@@ -10,12 +10,14 @@ LABEL maintainer "Xiangmin Jiao <xmjiao@gmail.com>"
 USER root
 WORKDIR /tmp
 
-ENV CUDA_VERSION=8.0.61-1
-ENV CUDA_PKG_VERSION=8-0=8.0.61-1
+ENV UBUNTU_VERSION=1804
+ENV CUDA_VERSION=10.1.243-1
+ENV CUDA_MAMI_VERSION=10.1
+ENV CUDA_PKG_VERSION=10-1=10.1.243-1
 
 # Install CUDA runtime
-RUN curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_${CUDA_VERSION}_amd64.deb && \
-    dpkg -i cuda-repo-ubuntu1604_${CUDA_VERSION}_amd64.deb && \
+RUN curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu${UBUNTU_VERSION}/x86_64/cuda-repo-ubuntu${UBUNTU_VERSION}_${CUDA_VERSION}_amd64.deb && \
+    dpkg -i cuda-repo-ubuntu${UBUNTU_VERSION}_${CUDA_VERSION}_amd64.deb && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
         cuda-nvrtc-$CUDA_PKG_VERSION \
@@ -27,7 +29,7 @@ RUN curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x
         cuda-cusparse-$CUDA_PKG_VERSION \
         cuda-npp-$CUDA_PKG_VERSION \
         cuda-cudart-$CUDA_PKG_VERSION && \
-    ln -s cuda-8.0 /usr/local/cuda && \
+    ln -s cuda-${CUDA_MAMI_VERSION} /usr/local/cuda && \
     echo "/usr/local/cuda/lib64" >> /etc/ld.so.conf.d/cuda.conf && ldconfig && \
     echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \
     echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf && \
