@@ -11,8 +11,8 @@ USER root
 WORKDIR /tmp
 
 ENV UBUNTU_VERSION=1804
-ENV CUDA_PKG_VERSION=10-0=10.0.130-1
-
+# ENV CUDA_PKG_VERSION=10-1=10.1.105-1
+ENV CUDA_PKG_VERSION=10-1
 
 # Install CUDA runtime by following steps oulined here:
 # https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1804&target_type=debnetwork
@@ -28,20 +28,20 @@ RUN apt-get update && \
         cuda-nvrtc-$CUDA_PKG_VERSION \
         cuda-nvgraph-$CUDA_PKG_VERSION \
         cuda-cusolver-$CUDA_PKG_VERSION \
-        cuda-cublas-$CUDA_PKG_VERSION \
+        libcublas10 \
         cuda-cufft-$CUDA_PKG_VERSION \
         cuda-curand-$CUDA_PKG_VERSION \
         cuda-cusparse-$CUDA_PKG_VERSION \
         cuda-npp-$CUDA_PKG_VERSION \
         cuda-cudart-$CUDA_PKG_VERSION \
-        cuda-core-$CUDA_PKG_VERSION \
+        cuda-compiler-$CUDA_PKG_VERSION \
         cuda-misc-headers-$CUDA_PKG_VERSION \
         cuda-command-line-tools-$CUDA_PKG_VERSION \
         cuda-nvrtc-dev-$CUDA_PKG_VERSION \
         cuda-nvml-dev-$CUDA_PKG_VERSION \
         cuda-nvgraph-dev-$CUDA_PKG_VERSION \
         cuda-cusolver-dev-$CUDA_PKG_VERSION \
-        cuda-cublas-dev-$CUDA_PKG_VERSION \
+        libcublas-dev \
         cuda-cufft-dev-$CUDA_PKG_VERSION \
         cuda-curand-dev-$CUDA_PKG_VERSION \
         cuda-cusparse-dev-$CUDA_PKG_VERSION \
