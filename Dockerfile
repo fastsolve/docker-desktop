@@ -1,4 +1,4 @@
-# Builds a Docker image with Ubuntu 16.04, Octave, Python3 and
+# Builds a Docker image with Ubuntu, Octave, Python3 and
 # Jupyter Notebook for FastSolve
 #
 # Authors:
