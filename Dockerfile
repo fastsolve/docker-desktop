@@ -1,4 +1,4 @@
-# Builds a Docker image with Ubuntu 17.10, Octave, Python3 and Jupyter Notebook for FastSolve
+# Builds a Docker image with Ubuntu, Octave, Python3 and Jupyter Notebook for FastSolve
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -18,7 +18,6 @@ RUN apt-get update && \
         flex \
         git \
         bash-completion \
-        bsdtar \
         rsync \
         wget \
         gdb \
@@ -39,7 +38,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install PETSc from source.
-ENV PETSC_VERSION=3.7.7 \
+ENV PETSC_VERSION=3.13.1 \
     OPENBLAS_NUM_THREADS=1 \
     OPENBLAS_VERBOSE=0
 
