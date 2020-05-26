@@ -1,5 +1,5 @@
 # Builds a Docker image for FastSolve development environment
-# with Ubuntu 16.04, Octave, Python3, Jupyter Notebook and Atom
+# with Ubuntu, Octave, Python3, Jupyter Notebook and VS Code
 #
 # Authors:
 # Xiangmin Jiao <xmjiao@gmail.com>
@@ -58,7 +58,7 @@ ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
-# petsc4m for Octave and MATLAB. Install Atom packages.
+# petsc4m for Octave and MATLAB.
 ###############################################################
 RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     ssh-keyscan -H github.com >> $DOCKER_HOME/.ssh/known_hosts && \
