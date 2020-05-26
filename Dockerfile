@@ -18,7 +18,6 @@ RUN apt-get update && \
         flex \
         git \
         bash-completion \
-        bsdtar \
         rsync \
         wget \
         unzip \
