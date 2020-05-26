@@ -41,20 +41,18 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > mic
         diffuse \
         enchant && \
     apt-get install -y --no-install-recommends \
-        python3-pip \
-        python3-dev \
-        python3-wheel \
         swig3.0 \
         pandoc \
         ttf-dejavu && \
     apt-get clean && \
+    curl -L https://github.com/hbin/top-programming-fonts/raw/master/install.sh | bash && \
     pip3 install -U \
         setuptools && \
     pip3 install -U \
         numpy \
         scipy \
         sympy \
-        PyQt5 \
+        pyqt5==5.14.0 \
         matplotlib \
         pandas \
         numba \
@@ -111,6 +109,7 @@ RUN mkdir -p $DOCKER_HOME/.vscode && \
         formulahendry.terminal; \
         do \
             code --install-extension $ext; \
-        done'
+        done' && \
+        chmod -R a+r $HOME/.config
 
 USER root
