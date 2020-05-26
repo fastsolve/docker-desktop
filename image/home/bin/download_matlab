@@ -52,7 +52,7 @@ fi
 if license_expired && [[ -f $HOME/.config/gdutil/mycred.txt || -f ./mycred.txt ]]
 then
   echo "Trying to download MATLAB licenses..."
-  (gd-get -p $GD_FOLDER -o - licenses.tgz | \
+  (gd-get -p $GD_FOLDER -o - licenses_${MATLAB_VERSION}.tgz | \
     sudo tar zxf - -C $MATLAB_ROOT &&
     sudo chown -R $USER:$USER $MATLAB_ROOT/licenses) || \
     echo "Could not download licenses. You need to activate MATLAB manually."

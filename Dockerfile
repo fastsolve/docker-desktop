@@ -17,6 +17,8 @@ ARG MFILE_ID=secret
 ADD image/etc /etc
 ADD image/home $DOCKER_HOME/
 
+ENV MATLAB_VERSION=R2020a
+
 # Install gdutil
 RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     \
@@ -24,8 +26,7 @@ RUN chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     pip2 install -r /usr/local/gdutil/requirements.txt && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
-    echo "move_to_config matlab/R2016b" >> /usr/local/bin/init_vnc && \
-    echo "move_to_config matlab/R2017a" >> /usr/local/bin/init_vnc && \
+    echo "move_to_config matlab/$MATLAB_VERSION" >> /usr/local/bin/init_vnc && \
     chown -R $DOCKER_USER:$DOCKER_GROUP $DOCKER_HOME && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -44,7 +45,7 @@ RUN gd-get-pub -o - $(sh -c "echo '$SSHKEY_ID'") | tar xf - -C $DOCKER_HOME && \
     \
     gd-get-pub -o - $(sh -c "echo '$MFILE_ID'") | \
         sudo bsdtar zxf - -C /usr/local --strip-components 2 && \
-    MATLAB_VERSION=$(cd /usr/local/MATLAB; ls) sudo -E /etc/my_init.d/make_aliases.sh && \
+    MATLAB_VERSION=$MATLAB_VERSION sudo -E /etc/my_init.d/make_aliases.sh && \
     \
     $DOCKER_HOME/bin/build_fastsolve -matlab && \
     sudo rm -rf /usr/local/MATLAB/R* && \
