@@ -54,8 +54,8 @@ def parse_args(description):
         "--matlab",
         nargs="?",
         metavar="VERSION",
-        help="Specify MATLAB version. Supported versions "
-        + "include R2016b or R2017a. The default is R2017a.",
+        help="Specify whether to use MATLAB. Use `-m` for MATLAB R2020a." + \
+            "Use `-m R2017a` to use MATLAB R2017a etc.",
         const="R2017a",
         default="",
     )
@@ -429,6 +429,8 @@ if __name__ == "__main__":
 
     if args.matlab:
         envs += ["--env", "MATLAB_VERSION=" + args.matlab]
+    else:
+        envs += ["--env", "MATLAB_VERSION="]
 
     # Find a free port for ssh tunning
     port_ssh = str(find_free_port(2222, 50))
