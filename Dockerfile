@@ -24,8 +24,6 @@ RUN apt-get update && \
     \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-USER $DOCKER_USER
-
 # Install PETSc
 RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETSC_VERSION}.tar.gz | \
     tar zx && \
@@ -51,10 +49,12 @@ RUN curl -s http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-${PETS
                 --download-spai \
                 --prefix=/usr/local/petsc-$PETSC_VERSION-dbg && \
      make all test && \
-     sudo make install && \
+     make install && \
      rm -rf /tmp/* /var/tmp/*
 
 ENV PETSC_DIR=/usr/local/petsc-$PETSC_VERSION-dbg
+
+USER $DOCKER_USER
 
 ###############################################################
 # Temporarily install MATLAB and build ilupack4m, paracoder, and
