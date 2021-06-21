@@ -12,7 +12,6 @@ WORKDIR /tmp
 
 # Install ilupack4m, paracoder and petsc4m
 RUN git clone --depth 1 https://github.com/hpdata/gdutil /usr/local/gdutil && \
-    pip2 install -r /usr/local/gdutil/requirements.txt && \
     pip3 install -r /usr/local/gdutil/requirements.txt && \
     ln -s -f /usr/local/gdutil/bin/* /usr/local/bin/ && \
     \
