@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Launch a Docker image with Ubuntu and LXDE window manager, and
@@ -56,7 +56,7 @@ def parse_args(description):
         metavar="VERSION",
         help="Specify whether to use MATLAB. Use `-m` for MATLAB R2020a." + \
             "Use `-m R2017a` to use MATLAB R2017a etc.",
-        const="R2017a",
+        const="R2020a",
         default="",
     )
 
